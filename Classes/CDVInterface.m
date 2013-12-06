@@ -58,7 +58,7 @@
 -(void) insertCurrLocation:(CLLocation *)location{
     
     //statically send location to server here
-    [self.connector postLocations:location];
+    //[self.connector postLocations:location];
     
     [self.dbHelper insertLocation:(location)];
 }
