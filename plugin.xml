@@ -43,7 +43,7 @@
         <source-file src="Classes/ServiceConnector.h" />
         <source-file src="Classes/ServiceConnector.m" />
 
-        <-- MODEL -->
+        <!-- MODEL -->
         <source-file src="Classes/LocationUpdates.h" />
         <source-file src="Classes/LocationUpdates.m" />
         <source-file src="Classes/LocationUpdates.xcdatamodel" />
