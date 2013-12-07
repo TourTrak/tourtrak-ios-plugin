@@ -49,6 +49,9 @@
 	<!-- System Framework Files -->
         <framework src="CoreData.framework"/>
 	<framework src="Foundation.framework"/>
+	
+	<!-- Model -->
+	<resource-file src="Classes/LocationUpdates.xcdatamodel/contents"/>
     </platform>
 
 </plugin>
