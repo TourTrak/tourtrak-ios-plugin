@@ -41,6 +41,7 @@
         <!-- MODEL -->
         <header-file src="Classes/LocationUpdates.h"/>
         <source-file src="Classes/LocationUpdates.m"/>
+        <source-file src="Classes/LocationUpdates.xcdatamodel" />
 
         <!-- Cordova Interface -->
         <header-file src="Classes/CDVInterface.h"/>
@@ -50,8 +51,6 @@
         <framework src="CoreData.framework"/>
 	<framework src="Foundation.framework"/>
 	
-	<!-- Model -->
-	<source-file src="Classes/LocationUpdates.xcdatamodel/contents"/>
     </platform>
 
 </plugin>
