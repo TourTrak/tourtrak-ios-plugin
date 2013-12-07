@@ -19,7 +19,7 @@
 
     <!-- ios -->
     <platform name="ios">
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file target="config.xml" parent="/*">
             <feature name="CDVInterface">
                 <param name="ios-package" value="CDVInterface" />
             </feature>
