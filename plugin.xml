@@ -48,8 +48,8 @@
         <source-file src="Classes/LocationUpdates.m" />
 
         <!-- Cordova Interface -->
-        <source-file src="CDVInterface.h" />
-        <source-file src="CDVInterface.m" />
+        <source-file src="Classes/CDVInterface.h" />
+        <source-file src="Classes/CDVInterface.m" />
 
     </platform>
 
