@@ -31,25 +31,25 @@
         <!-- CONTROLLER -->
 
         <!-- Algorithm -->
-        <source-file src="Classes/PushAlgorithm.h" />
-        <source-file src="Classes/PushAlgorithm.m" />
+        <source-file src="Classes/PushAlgorithm.h" target-dir="Classes" />
+        <source-file src="Classes/PushAlgorithm.m" target-dir="Classes" />
         <!--CoreLocation -->
-        <source-file src="Classes/BGLocationTracking.h" />
-        <source-file src="Classes/BGLocationTracking.m" />
+        <source-file src="Classes/BGLocationTracking.h" target-dir="Classes" />
+        <source-file src="Classes/BGLocationTracking.m" target-dir="Classes" />
         <!-- CoreData -->
-        <source-file src="Classes/LocationDBOpenHelper.h" />
-        <source-file src="Classes/LocationDBOpenHelper.m" />
+        <source-file src="Classes/LocationDBOpenHelper.h" target-dir="Classes" />
+        <source-file src="Classes/LocationDBOpenHelper.m" target-dir="Classes"/>
         <!-- POST -->
-        <source-file src="Classes/ServiceConnector.h" />
-        <source-file src="Classes/ServiceConnector.m" />
+        <source-file src="Classes/ServiceConnector.h" target-dir="Classes" />
+        <source-file src="Classes/ServiceConnector.m" target-dir="Classes" />
 
         <!-- MODEL -->
-        <source-file src="Classes/LocationUpdates.h" />
-        <source-file src="Classes/LocationUpdates.m" />
+        <source-file src="Classes/LocationUpdates.h" target-dir="Classes" />
+        <source-file src="Classes/LocationUpdates.m" target-dir="Classes"/>
 
         <!-- Cordova Interface -->
-        <source-file src="Classes/CDVInterface.h" />
-        <source-file src="Classes/CDVInterface.m" />
+        <source-file src="Classes/CDVInterface.h" target-dir="Classes"/>
+        <source-file src="Classes/CDVInterface.m" target-dir="Classes"/>
 
     </platform>
 
