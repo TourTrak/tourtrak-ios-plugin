@@ -51,6 +51,8 @@
         <source-file src="Classes/CDVInterface.h"/>
         <source-file src="Classes/CDVInterface.m"/>
 
+        <framework src="CoreData.framework" />
+
     </platform>
 
 </plugin>
