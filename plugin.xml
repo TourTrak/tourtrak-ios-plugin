@@ -55,6 +55,7 @@
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
 		<array>
 			<string>location</string>
+			<string></string>
 		</array>
         </config-file>
         
