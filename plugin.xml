@@ -51,18 +51,13 @@
         <framework src="CoreData.framework"/>
 	<framework src="Foundation.framework"/>
 	
-	<!-- -->
-        <config-file target="*-Info.plist" parent="*">
-        	<key>UIBackgroundModes</key>
+	<!-- Adding the Plist file for app in order for bg location tracking -->
+        <config-file target="*-Info.plist" parent="UIBackgroundModes">
 		<array>
 			<string>location</string>
-			<string></string>
 		</array>
         </config-file>
         
-        <!-- The Plist file for the geolocation plugin -->
-        <resource-file src="geolocation-plugin-Info.plist" />
-	
     </platform>
 
 </plugin>
