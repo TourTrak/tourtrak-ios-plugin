@@ -52,7 +52,7 @@
 	<framework src="Foundation.framework"/>
 	
 	<!-- -->
-        <config-file target="DevCycleMobile-Info.plist" parent="/*">
+        <config-file target="*-Info.plist" parent="*">
         	<key>UIBackgroundModes</key>
 		<array>
 			<string>location</string>
