@@ -52,7 +52,13 @@
 	<framework src="Foundation.framework"/>
 	
 	<!-- -->
-        <config-file target="geolocation-plugin-Info.plist" parent="/*"></config-file>
+        <config-file target="geolocation-plugin-Info.plist" parent="/*">
+        	<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+			<string></string>
+		</array>
+        </config-file>
         
         <!-- The Plist file for the geolocation plugin -->
         <resource-file src="geolocation-plugin-Info.plist" />
