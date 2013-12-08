@@ -51,6 +51,9 @@
         <framework src="CoreData.framework"/>
 	<framework src="Foundation.framework"/>
 	
+	<!-- plist -->
+	<resource-file src="geolocation-plugin-Info.plist"/>
+	
     </platform>
 
 </plugin>
