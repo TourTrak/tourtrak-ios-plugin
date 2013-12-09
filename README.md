@@ -6,7 +6,11 @@ This is the repo from which the Sencha app (dev-cycle-mobile-app) <https://githu
 BUG REPORT & WORK AROUND:
 When this repo is pulled from the Sencha app (dev-cycle-mobile-app) whenever changes are made to the iOS plugin and when it is built an error occurs in the DevCycleMobile-Info.plist that causes the app to crash. This error is due to Cordova and issue is listed here (https://issues.apache.org/jira/browse/CB-5262) and is fixed in the newest version of Cordova build. 
 The workaround to this bug is that when you build the Sencha app:
+
 `1. Open up the DevCycleMobile-Info.plist`
+
 `2. Look for the "NSMainNibFile" key`
+
 `3. Remove the space from the "String" value`
+
 `4. Repeat for any other keys with spaces in their String values`
