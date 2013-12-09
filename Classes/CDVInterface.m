@@ -4,6 +4,10 @@
 //
 //  Created by Christopher Ketant on 11/14/13.
 //
+// Currently does not have an algorithm for sending
+// the location stored in the local database.
+// TO-DO: Implement Algorithm
+//
 //
 
 #import "CDVInterface.h"
@@ -12,16 +16,23 @@
 
 @interface CDVInterface ()
 
-@property (strong, nonatomic) CDVInvokedUrlCommand *successCB;
-@property (strong, nonatomic) CDVInvokedUrlCommand *errorCB;
+@property (strong, nonatomic) NSDictionary *json;
+@property (nonatomic) int locCount;
 
+/**
+ * This is a temp function
+ * used to determine when to
+ * send the locations stored
+ * in the db.
+ *
+ **/
+-(void) checkDB;
 
 @end
 
 
 @implementation CDVInterface
 @synthesize dbHelper, locTracking, connector;
-@synthesize successCB, errorCB;
 
 
 
@@ -32,9 +43,16 @@
     if(self.dbHelper == nil && self.locTracking == nil && self.connector == nil){
         [self initCDVInterface];
     }
-    NSUInteger argumentsCount = command.arguments.count;
-    self.successCB = argumentsCount ? command.arguments[0] : nil;
-    self.errorCB = (argumentsCount > 1) ? command.arguments[1] : nil;
+    NSError* error;
+    
+    NSData *jsonData = [NSKeyedArchiver
+                    archivedDataWithRootObject:command];
+    
+    //Get the json here
+    self.json = [NSJSONSerialization
+                 JSONObjectWithData:jsonData
+                 options:kNilOptions
+                 error:&error];
     
     
 }
@@ -50,7 +68,7 @@
     self.locTracking = [[BGLocationTracking alloc]initWithCDVInterface: self];
     
     //set up service connector
-    self.connector = [[ServiceConnector alloc]init];
+    self.connector = [[ServiceConnector alloc]initWithDCSParams:self.json];
     
 }
 
@@ -59,8 +77,10 @@
     
     //statically send location to server here
     //[self.connector postLocations:location];
-    
+    self.locCount++;
     [self.dbHelper insertLocation:(location)];
+    
+    
 }
 
 -(NSArray*) getAllLocations{
@@ -75,5 +95,13 @@
     [self.dbHelper clearLocations];
 }
 
+#pragma mark - Utility Function
+
+-(void) checkDB{
+    if(self.locCount > 10){
+        [self.connector postLocations:[self getAllLocations]];
+        [self clearLocations];
+    }
+}
 
 @end

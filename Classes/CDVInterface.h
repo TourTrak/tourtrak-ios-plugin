@@ -29,8 +29,17 @@
 /**
  * Start Getting the current
  * Location, called from JavaScript
+ * 
+ * The CDVInokedUrlCommand will contain a
+ * json and command will have a size of 
+ * one. The json will have the following:
+ *      dcsUrl
+ *      tourConfigId
+ *      riderId
+ *      pushId
  *
- *@param - Cordova Function to Call
+ *
+ *@param - Json 
  **/
 - (void)startUpdatingLocation:(CDVInvokedUrlCommand *)command;
 

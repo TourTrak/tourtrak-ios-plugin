@@ -13,8 +13,9 @@
 @interface ServiceConnector()
 
 @property (nonatomic) NSData* receivedData;
-
 @property (nonatomic) CDVInterface *cordInterface;
+@property (nonatomic) NSString *dcsUrl, *tourConfigId, *riderId;
+
 
 
 
@@ -52,7 +53,21 @@
  * URL to the SERVER
  *
  */
-static NSString *SERVER_LOCATION_UPDATE_URL = @"http://devcycle.se.rit.edu/location_update/";
+static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
+
+#pragma mark - Init Function
+
+-(id) initWithDCSParams:(NSDictionary *)dict{
+    self = [super init];
+    if(self){
+        NSString *serverPath = [dict objectForKey:@"dcsUrl"];
+        
+        self.dcsUrl = [serverPath stringByAppendingString:SERVER_LOCATION_UPDATE_URL];
+        self.tourConfigId = [dict objectForKey:@"tourConfigId"];
+        self.riderId = [dict objectForKey:@"riderId"];
+    }
+    return self;
+}
 
 
 #pragma mark - Utility Functions
@@ -136,7 +151,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"http://devcycle.se.rit.edu/locat
 -(void)postLocations:(NSArray *)dbLocations{
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString:SERVER_LOCATION_UPDATE_URL]];
+                                    [NSURL URLWithString:self.dcsUrl]];
     //add Method
     [request setHTTPMethod:@"POST"];
     
@@ -145,7 +160,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"http://devcycle.se.rit.edu/locat
     NSArray *locations = [self getLocations:dbLocations];
     
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                 @"1", @"rider_id", //rider's id
+                                 @"", @"rider_id", //rider's id
                                  locations, @"locations", //locations array full of locations
                                  [[UIDevice currentDevice] batteryLevel], @"battery", //current battery level
                                  nil];

@@ -32,6 +32,16 @@
 
 @property (strong,nonatomic) id <ServiceConnectorDelegate> delegate;
 
+/**
+ * Initialize the ServiceConnector with
+ * the parameters needed to post to 
+ * the DCS Server
+ * @param - the dictionary with the needed
+ * values
+ *
+ **/
+-(id) initWithDCSParams: (NSDictionary *)dict;
+
 
 /**
  * Post the Location to the Server
@@ -71,6 +81,7 @@
  * }
  * @param- the Location or Rider
  **/
--(void)postLocations: (CLLocation *)location;
+-(void)postLocations: (NSArray *)dbLocations;
+
 
 @end
