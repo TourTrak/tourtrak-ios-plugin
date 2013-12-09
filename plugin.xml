@@ -8,45 +8,57 @@
     <license>TBD</license>
     <keywords>Cordova,Geolocation Tracker</keywords>
     
+    <dependency id="org.apache.cordova.console" url="https://git-wip-us.apache.org/repos/asf/cordova-plugin-console.git" commit="master" subdir="."/>
+    <dependency id="org.apache.cordova.network-information" url="https://github.com/apache/cordova-plugin-network-information.git" commit="master" subdir="."/>
+    <dependency id="org.jboss.aerogear.cordova.push" url="https://github.com/phonegap-build/PushPlugin.git" commit="master" subdir="."/>
+    
     
     <js-module src="www/js/plugins/CDVInterface.js" name="CDVInterface">
         <clobbers target="window.CDVInterface" />
     </js-module>
-    
-    <dependency id="org.apache.cordova.console" url="https://git-wip-us.apache.org/repos/asf/cordova-plugin-console.git" commit="master"
-        />
-    <dependency id="org.apache.cordova.network-information" url="https://github.com/apache/cordova-plugin-network-information.git" commit="master"
-        />
-    <dependency id="org.jboss.aerogear.cordova.push" url="https://github.com/phonegap-build/PushPlugin.git" commit="master"
-        />
 
     <!-- ios -->
     <platform name="ios">
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file target="config.xml" parent="/*">
             <feature name="CDVInterface">
                 <param name="ios-package" value="CDVInterface" />
             </feature>
         </config-file>
 
-        <!-- CONTROLLER -->
-
         <!-- Algorithm -->
-        <source-file src="Classes/PushAlgorithm.h" />
-        <source-file src="Classes/PushAlgorithm.m" />
+        <header-file src="Classes/PushAlgorithm.h"/>
+        <source-file src="Classes/PushAlgorithm.m"/>
         <!--CoreLocation -->
-        <source-file src="Classes/BGLocationTracking.h" />
-        <source-file src="Classes/BGLocationTracking.m" />
+        <header-file src="Classes/BGLocationTracking.h"/>
+        <source-file src="Classes/BGLocationTracking.m"/>
         <!-- CoreData -->
-        <source-file src="Classes/LocationDBOpenHelper.h" />
-        <source-file src="Classes/LocationDBOpenHelper.m" />
+        <header-file src="Classes/LocationDBOpenHelper.h"/>
+        <source-file src="Classes/LocationDBOpenHelper.m"/>
         <!-- POST -->
-        <source-file src="Classes/ServiceConnector.h" />
-        <source-file src="Classes/ServiceConnector.m" />
+        <header-file src="Classes/ServiceConnector.h"/>
+        <source-file src="Classes/ServiceConnector.m"/>
 
         <!-- MODEL -->
-        <source-file src="Classes/LocationUpdates.h" />
-        <source-file src="Classes/LocationUpdates.m" />
-        <source-file src="Classes/LocationUpdates.xcdatamodel" />
+        <header-file src="Classes/LocationUpdates.h"/>
+        <source-file src="Classes/LocationUpdates.m"/>
+        <resource-file src="Classes/LocationUpdates.xcdatamodel" />
+
+        <!-- Cordova Interface -->
+        <header-file src="Classes/CDVInterface.h"/>
+        <source-file src="Classes/CDVInterface.m"/>
+
+	<!-- System Framework Files -->
+        <framework src="CoreData.framework"/>
+	<framework src="Foundation.framework"/>
+	
+	<!-- Adding the Plist file for app in order for bg location tracking -->
+       <config-file target="*-Info.plist" parent="UIBackgroundModes">
+		<array>
+			<string>location</string>
+			<string></string>
+		</array>
+        </config-file>
+        
     </platform>
 
 </plugin>
