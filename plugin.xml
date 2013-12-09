@@ -52,12 +52,12 @@
 	<framework src="Foundation.framework"/>
 	
 	<!-- Adding the Plist file for app in order for bg location tracking -->
-       <!-- <config-file target="*-Info.plist" parent="UIBackgroundModes">
+       <config-file target="*-Info.plist" parent="UIBackgroundModes">
 		<array>
 			<string>location</string>
 			<string></string>
 		</array>
-        </config-file>-->
+        </config-file>
         
     </platform>
 
