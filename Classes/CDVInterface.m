@@ -43,16 +43,16 @@
     if(self.dbHelper == nil && self.locTracking == nil && self.connector == nil){
         [self initCDVInterface];
     }
-    NSError* error;
+    /*NSError* error;
     
-    NSData *jsonData = [NSKeyedArchiver
+    /*NSData *jsonData = [NSKeyedArchiver
                     archivedDataWithRootObject:command];
     
     //Get the json here
     self.json = [NSJSONSerialization
                  JSONObjectWithData:jsonData
                  options:kNilOptions
-                 error:&error];
+                 error:&error];*/
     
     
 }
