@@ -2,8 +2,11 @@
 //  BGLocationTracking.m
 //  BGLocationTracking
 //
-//  Created by Alex Shmaliy on 8/20/13.
+//  Created by Alex Shmaliy on 8/20/13 modified by Chris Ketant.
 //  MIT Licensed
+//
+// TODO - Find out how to retrieve single location data
+//        at a time for algorithm sake
 //
 
 #import "BGLocationTracking.h"

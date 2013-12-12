@@ -10,6 +10,7 @@
 #import "CDVInterface.h"
 
 
+
 @interface ServiceConnector()
 
 @property (nonatomic) NSData* receivedData;
@@ -26,7 +27,7 @@
  * @param- Location
  * @return- Dictonary
  **/
--(NSDictionary*)getDict:(CLLocation*)loc;
+-(NSDictionary*)getDict:(LocationUpdates*)loc;
 
 /**
  * Get all the locations in proper format
@@ -72,47 +73,22 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 
 #pragma mark - Utility Functions
 
--(NSDictionary*)getDict:(CLLocation *)loc{
+-(NSDictionary*)getDict:(LocationUpdates *)loc{
     
-    NSNumber *latitude, *longitude, *speed, *accuracy;
-
-    //the date and time string in proper
-    //format
-    NSString *dateStr = [NSDateFormatter
-                         localizedStringFromDate:loc.timestamp
-                         dateStyle:NSDateFormatterShortStyle
-                         timeStyle:NSDateFormatterFullStyle];
-    
-    
-    //battery format
+       //battery format
     float batteryLevel = [[UIDevice currentDevice] batteryLevel];
-    
-    //To avoid run time error must check if any of the CLLocation attributes
-    //is nil. If nil then set to Null.
-    
-    //latitude
-    (loc.coordinate.latitude == 0.0 ? [NSNull null] : [[NSNumber alloc]initWithDouble:loc.coordinate.latitude]);
-    
-    //longitude
-    (loc.coordinate.longitude == 0.0 ? [NSNull null] : [[NSNumber alloc]initWithDouble:loc.coordinate.longitude]);
-    
-    //speed
-    (loc.speed == 0.0 ? [NSNull null] : [[NSNumber alloc]initWithDouble:loc.speed]);
-    
-    //accuracy
-    (loc.horizontalAccuracy == 0.0 ? [NSNull null] : [[NSNumber alloc]initWithDouble:loc.horizontalAccuracy]);
     
     //dictionaryWithObjectsAndKeys takes the values first
     //then the keys
     NSDictionary *locDic = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            dateStr, @"time",
+                            loc.time, @"time",
                             batteryLevel,  @"battery",
-                            latitude.doubleValue, @"latitude",
-                            longitude.doubleValue, @"longitude",
-                            speed.doubleValue, @"speed",
-                            accuracy.doubleValue, @"accuracy",
-                            [NSNull null], @"bearing", //will get this from the locaiton stored in db
-                            [NSNull null], @"provider",
+                            loc.latitude, @"latitude",
+                            loc.longitude, @"longitude",
+                            loc.speed, @"speed",
+                            loc.accuracy, @"accuracy",
+                            loc.bearing, @"bearing", //will get this from the locaiton stored in db
+                            loc.provider, @"provider",
                             nil];
     
     return locDic;

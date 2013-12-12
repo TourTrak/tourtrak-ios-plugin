@@ -45,7 +45,7 @@
     }
     /*NSError* error;
     
-    /*NSData *jsonData = [NSKeyedArchiver
+    /* NSData *jsonData = [NSKeyedArchiver
                     archivedDataWithRootObject:command];
     
     //Get the json here
@@ -79,6 +79,7 @@
     //[self.connector postLocations:location];
     self.locCount++;
     [self.dbHelper insertLocation:(location)];
+    [self checkDB];
     
     
 }
