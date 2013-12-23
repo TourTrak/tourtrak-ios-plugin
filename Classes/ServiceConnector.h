@@ -37,11 +37,18 @@
  * Initialize the ServiceConnector with
  * the parameters needed to post to 
  * the DCS Server
- * @param - the dictionary with the needed
- * values
+ * @param - DCSUrl
+ * @param - Start Time
+ * @param - End Time
+ * @param - Tour Configuration ID
+ * @param - Rider's ID
  *
  **/
--(id) initWithDCSParams: (NSDictionary *)dict;
+-(id) initWithParams:(NSString *)vDCSUrl
+                    :(NSString *)vStartTime
+                    :(NSString *)vEndTime
+                    :(NSString *)vTourConfigId
+                    :(NSString *)vRiderId;
 
 
 /**

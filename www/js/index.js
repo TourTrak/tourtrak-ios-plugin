@@ -18,45 +18,56 @@
  */
 var app = {
     // Application Constructor
-initialize: function() {
-    this.bindEvents();
-},
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-bindEvents: function() {
-    document.addEventListener('deviceready', this.onDeviceReady, false);
-    
-},
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicity call 'app.receivedEvent(...);'
-onDeviceReady: function() {
-    app.receivedEvent('deviceready');
-    //Start Getting Location
-    CDVInterface.startUpdatingLocation( app.yourCallback, app.yourErrorCallback );
-    //Start the plugin here
-},
-    
-yourCallback: function(){
-    console.log('From index.js: Call Back Function Called');
-},
-yourErrorCallback: function(){
-    console.log('From index.js: Error Call Back Function Called');
-},
-    // Update DOM on a Received Event
-receivedEvent: function(id) {
-    var parentElement = document.getElementById(id);
-    var listeningElement = parentElement.querySelector('.listening');
-    var receivedElement = parentElement.querySelector('.received');
-    
-    listeningElement.setAttribute('style', 'display:none;');
-    receivedElement.setAttribute('style', 'display:block;');
-    
-    console.log('Received Event: ' + id);
-}
+    initialize: function() {
+        this.bindEvents();
+    },
+        // Bind Event Listeners
+        //
+        // Bind any events that are required on startup. Common events are:
+        // 'load', 'deviceready', 'offline', and 'online'.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.getElementById("resume").addEventListener("click", this.resumeTracking);
+        document.getElementById("pause").addEventListener("click", this.pauseTracking);
+    },
+        // deviceready Event Handler
+        //
+        // The scope of 'this' is the event. In order to call the 'receivedEvent'
+        // function, we must explicity call 'app.receivedEvent(...);'
+    onDeviceReady: function() {
+        app.receivedEvent('deviceready');
+        //add listeners to button
+
+        //Start plugin here
+        CDVInterface.start( app.yourCallback, app.yourErrorCallback );
+    },
+
+    resumeTracking: function(){
+        console.log("JS: RESUMED CLICKED");
+        CDVInterface.resumeTracking(app.yourCallback, app.yourErrorCallback );
+    },
+    pauseTracking: function(){
+        console.log("JS: PAUSED CLICKED");
+        CDVInterface.pauseTracking(app.yourCallback, app.yourErrorCallback );
+    },
+        
+    yourCallback: function(){
+        console.log('From index.js: Call Back Function Called');
+    },
+    yourErrorCallback: function(){
+        console.log('From index.js: Error Call Back Function Called');
+    },
+        // Update DOM on a Received Event
+    receivedEvent: function(id) {
+        var parentElement = document.getElementById(id);
+        var listeningElement = parentElement.querySelector('.listening');
+        var receivedElement = parentElement.querySelector('.received');
+        
+        listeningElement.setAttribute('style', 'display:none;');
+        receivedElement.setAttribute('style', 'display:block;');
+        
+        console.log('Received Event: ' + id);
+    }
 
     
 };//app

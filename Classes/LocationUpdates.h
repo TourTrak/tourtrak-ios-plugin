@@ -13,12 +13,11 @@
 @interface LocationUpdates : NSManagedObject
 
 @property (nonatomic, retain) NSString * time;
-@property (nonatomic, retain) NSString * latitude;
-@property (nonatomic, retain) NSString * longitude;
-@property (nonatomic, retain) NSString * accuracy;
-@property (nonatomic, retain) NSString * speed;
-@property (nonatomic, retain) NSString * bearing;
+@property (nonatomic, retain) NSNumber * latitude;
+@property (nonatomic, retain) NSNumber * longitude;
+@property (nonatomic, retain) NSNumber * accuracy;
+@property (nonatomic, retain) NSNumber * speed;
+@property (nonatomic, retain) NSNumber * bearing;
 @property (nonatomic, retain) NSString * provider;
-@property (nonatomic, retain) NSString * battery;
 
 @end

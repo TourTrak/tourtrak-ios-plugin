@@ -42,6 +42,12 @@
  **/
 - (void)storeLocs: (CLLocation *)loc;
 
+/**
+ * Convert the Date and TIme from the timestamp
+ * from the location manager to UTC
+ **/
+- (NSString *)getUTCFormatDate:(NSDate*)localDate;
+
 @end
 
 @implementation LocationDBOpenHelper
@@ -83,6 +89,17 @@
     }
 
 }
+
+-(NSString *)getUTCFormatDate:(NSDate *)localDate{
+    
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+        [dateFormatter setTimeZone:timeZone];
+        [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
+        NSString *dateString = [dateFormatter stringFromDate:localDate];
+        return dateString;
+}
+
 
 #pragma mark -
 #pragma mark DB Interface Functions
@@ -147,34 +164,26 @@
     //Grab context
     NSManagedObjectContext *context = [self managedObjectContext];
     
-    NSString *dateStr = [NSDateFormatter
-                         localizedStringFromDate:location.timestamp
-                         dateStyle:NSDateFormatterShortStyle
-                         timeStyle:NSDateFormatterFullStyle];
     //Grab LocationUpdates Entity
     LocationUpdates *loc = [NSEntityDescription insertNewObjectForEntityForName:@"LocationUpdates" inManagedObjectContext:context];
     
     //set time
-    loc.time = [NSString stringWithFormat:@"%@", dateStr];
+    loc.time = [self getUTCFormatDate:location.timestamp];
     
     //set latitude
-    loc.latitude = [NSString stringWithFormat:@"%g", location.coordinate.latitude];
+    loc.latitude = [[NSNumber alloc]initWithDouble:location.coordinate.latitude];
     
     //set latitude
-    loc.longitude = [NSString stringWithFormat:@"%g", location.coordinate.longitude];
+    loc.longitude = [[NSNumber alloc]initWithDouble:location.coordinate.longitude];
     
     //set speed
-    loc.speed = [NSString stringWithFormat:@"%g", location.speed];
-    
-    //set battery
-    float batteryLevel = [[UIDevice currentDevice] batteryLevel];
-    loc.battery = [NSString stringWithFormat:@"%g", batteryLevel];
+    loc.speed = [[NSNumber alloc]initWithDouble:location.speed];
     
     //set accuracy
-    loc.accuracy = [NSString stringWithFormat:@"%g", location.horizontalAccuracy];
+    loc.accuracy = [[NSNumber alloc]initWithDouble:location.horizontalAccuracy];
     
     //set bearing
-    loc.bearing = [NSString stringWithFormat:@"%g", [self getBearing]];
+    loc.bearing = [[NSNumber alloc]initWithFloat:[self getBearing]];
     
     //set provider
     loc.provider = @"NO PROVIDER";

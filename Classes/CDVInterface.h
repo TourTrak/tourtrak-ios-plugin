@@ -27,21 +27,34 @@
 #pragma mark - Sencha interface functions
 
 /**
- * Start Getting the current
- * Location, called from JavaScript
- * 
+ * Initialize the plugin and start tracking
  * The CDVInokedUrlCommand will contain a
  * json and command will have a size of 
  * one. The json will have the following:
  *      dcsUrl
+ *      startTime
+ *      endTime
  *      tourConfigId
  *      riderId
- *      pushId
  *
  *
- *@param - Json 
+ * @param - Json 
  **/
-- (void)startUpdatingLocation:(CDVInvokedUrlCommand *)command;
+- (void)start:(CDVInvokedUrlCommand *)command;
+
+/**
+ * Resume Tracking assuming,
+ * tracking has been paused
+ *
+ **/
+- (void)resumeTracking:(CDVInvokedUrlCommand *)command;
+
+/**
+ * Pause Tracking assuming,
+ * tracking has started or resumed
+ *
+ **/
+- (void)pauseTracking:(CDVInvokedUrlCommand *)command;
 
 
 

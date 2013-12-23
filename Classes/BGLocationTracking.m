@@ -21,6 +21,7 @@
 @property (strong, nonatomic) CDVInvokedUrlCommand *successCB;
 @property (strong, nonatomic) CDVInvokedUrlCommand *errorCB;
 @property (strong, nonatomic) NSDate *locationManagerCreationDate;
+@property BOOL isTracking;
 
 @end
 
@@ -30,6 +31,7 @@
 @synthesize locationManager, cordInterface;
 @synthesize successCB, errorCB;
 @synthesize locationManagerCreationDate;
+@synthesize isTracking;
 
 
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
@@ -43,6 +45,7 @@
         locationManager.distanceFilter = DISTANCE_FILTER_IN_METERS;
         locationManager.activityType = CLActivityTypeFitness;
         [locationManager startUpdatingLocation];
+        isTracking=YES;
     }
     return self;
 }
@@ -64,6 +67,24 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     //TODO: handle error
+}
+
+
+- (void)resumeTracking{
+    if(!isTracking){
+        [locationManager startUpdatingLocation];
+        isTracking = true;
+        NSLog(@"iOS: RESUMED TRACKING");
+
+    }
+}
+
+- (void)pauseTracking{
+    if(isTracking){
+        [locationManager stopUpdatingLocation];
+        isTracking = false;
+        NSLog(@"iOS: PAUSED TRACKING");
+    }
 }
 
 
