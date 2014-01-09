@@ -42,26 +42,18 @@
 #pragma mark - Sencha Interface Functions
 -(void) start:(CDVInvokedUrlCommand *)command{
     
-    //First check if we initilized already
-    if(self.dbHelper == nil && self.locTracking == nil && self.connector == nil){
-        [self initCDVInterface];
-    }
-    
-    
-    
-    
     //Second get the args in the command
     CDVPluginResult* pluginResult = nil;
     NSString* javascript = nil;
     
     @try {
-        //The args we are expecting
-        DCSUrl = [command.arguments objectAtIndex:0];
-        startTime = [command.arguments objectAtIndex:1];
-        endTime = [command.arguments objectAtIndex:2];
-        tourConfigId = [command.arguments objectAtIndex:3];
-        riderId = [command.arguments objectAtIndex:4];
         
+        DCSUrl = [[command.arguments objectAtIndex:0]  objectForKey:@"dcsUrl"];
+        startTime = [[command.arguments objectAtIndex:0]  objectForKey:@"startTime"];
+        endTime = [[command.arguments objectAtIndex:0]  objectForKey:@"endTime"];
+        tourConfigId = [[command.arguments objectAtIndex:0]  objectForKey:@"tourId"];
+        riderId = [[command.arguments objectAtIndex:0]  objectForKey:@"riderId"];
+
         if(DCSUrl != nil
            && startTime != nil
            && endTime != nil
@@ -83,9 +75,9 @@
         [self writeJavascript:javascript];
     }
     
-    
-    
+    [self initCDVInterface];
 }
+
 
 -(void) resumeTracking:(CDVInvokedUrlCommand *)command{ [self.locTracking resumeTracking]; }
 

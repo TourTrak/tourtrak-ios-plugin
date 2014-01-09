@@ -3,6 +3,7 @@
 //
 //
 //  Created by Stas Gorodnichenko on 20/08/13.
+//  Modified by Christopher Ketant & Christoffer Rosen
 //  MIT Licensed
 //
 
@@ -15,16 +16,19 @@ var successCallBackFunction,
         /**
          * Starts the plugin
          * Initializes the plugin with the following required
-         * parameters. Add parameters into the array.
-         *
-         * @param- DCSUrl
-         * @param- startTime
-         * @param- endTime
-         * @param- tourConfigId
-         * @param- riderId
+         * parameters as a JSON array: dcsUrl (string), startTime (unix time),
+         * endTime (unix time), tourId (string), riderId (string - encrypted).
+         * 
+         * Usage: cordova.exec( callbackSuccessFn, callbackErrorFn, 'CDVInterface', 'start', [{
+         *                  "dcsUrl": http://devcycle.se.rit.edu",
+         *                  "startTime": 138652600,
+         *                  "endTime": 1389114000,
+         *                  "tourId": "toffer",
+         *                  "riderId": [An encrypted rider id]
+         *          }]);
          **/
-        start: function( callbackSuccess , callbackError ) {
-            cordova.exec( callbackSuccess, callbackError, "CDVInterface", "start", [] );
+        start: function( callbackSuccess , callbackError, arguments ) {
+            cordova.exec( callbackSuccess, callbackError, "CDVInterface", "start", JSON.stringify(arguments) );
         },
         
         /**
