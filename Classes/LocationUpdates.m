@@ -18,5 +18,6 @@
 @dynamic speed;
 @dynamic bearing;
 @dynamic provider;
+@dynamic battery;
 
 @end

@@ -18,6 +18,7 @@
 @property (nonatomic, retain) NSNumber * accuracy;
 @property (nonatomic, retain) NSNumber * speed;
 @property (nonatomic, retain) NSNumber * bearing;
+@property (nonatomic, retain) NSNumber * battery;
 @property (nonatomic, retain) NSString * provider;
 
 @end

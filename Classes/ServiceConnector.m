@@ -93,6 +93,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
                             loc.accuracy, @"accuracy",
                             loc.bearing, @"bearing", //will get this from the locaiton stored in db
                             loc.provider, @"provider",
+                            loc.battery, @"battery",
                             nil];
     
     return locDic;
@@ -140,7 +141,6 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
                                  locations, @"locations",//locations array full of locations
-                                 battery, @"battery",//current battery level
                                  nil];
 
     NSError *writeError = nil;

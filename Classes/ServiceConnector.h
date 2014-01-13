@@ -71,7 +71,8 @@
  *           "speed": 0,
  *           "bearing": 37.444657,
  *           "time": 1359488523,
- *           "provider": "GPS"
+ *           "provider": "GPS",
+ *			 "battery": 0.5
  *       },
  *       }
  *           .
@@ -79,7 +80,6 @@
  *           .
  *       }
  * ],
- * "battery": 0.5
  * }
  *
  *

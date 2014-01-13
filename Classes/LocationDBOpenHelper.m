@@ -167,6 +167,9 @@
     //Grab LocationUpdates Entity
     LocationUpdates *loc = [NSEntityDescription insertNewObjectForEntityForName:@"LocationUpdates" inManagedObjectContext:context];
     
+    //Grab device battery level and set it.
+    loc.battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
+
     //set time
     loc.time = [self getUTCFormatDate:location.timestamp];
     
@@ -185,8 +188,13 @@
     //set bearing
     loc.bearing = [[NSNumber alloc]initWithFloat:[self getBearing]];
     
-    //set provider
-    loc.provider = @"NO PROVIDER";
+    // set provider
+    // altitude is undefned if it doesn't have GPS lock
+    if (location.altitude < 0){
+        loc.provider = @"NETWORK";
+    } else {
+        loc.provider = @"GPS";
+    }
     
     NSError *error;
     if(![context save:&error]){
