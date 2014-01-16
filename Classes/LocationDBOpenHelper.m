@@ -42,12 +42,6 @@
  **/
 - (void)storeLocs: (CLLocation *)loc;
 
-/**
- * Convert the Date and TIme from the timestamp
- * from the location manager to UTC
- **/
-- (NSString *)getUTCFormatDate:(NSDate*)localDate;
-
 @end
 
 @implementation LocationDBOpenHelper
@@ -89,17 +83,6 @@
     }
 
 }
-
--(NSString *)getUTCFormatDate:(NSDate *)localDate{
-    
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-        [dateFormatter setTimeZone:timeZone];
-        [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
-        NSString *dateString = [dateFormatter stringFromDate:localDate];
-        return dateString;
-}
-
 
 #pragma mark -
 #pragma mark DB Interface Functions
@@ -170,8 +153,9 @@
     //Grab device battery level and set it.
     loc.battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
 
-    //set time
-    loc.time = [self getUTCFormatDate:location.timestamp];
+    //set time - unix time since epoch in ms
+    NSNumber *epochInMs = [[NSNumber alloc]initWithLongLong:(location.timestamp.timeIntervalSince1970 * 1000)];
+    loc.time = epochInMs;
     
     //set latitude
     loc.latitude = [[NSNumber alloc]initWithDouble:location.coordinate.latitude];

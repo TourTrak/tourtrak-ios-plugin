@@ -12,7 +12,7 @@
 
 @interface LocationUpdates : NSManagedObject
 
-@property (nonatomic, retain) NSString * time;
+@property (nonatomic, retain) NSNumber * time; // unix time epoch in MS
 @property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSNumber * longitude;
 @property (nonatomic, retain) NSNumber * accuracy;
