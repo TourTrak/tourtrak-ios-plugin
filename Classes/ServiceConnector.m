@@ -9,17 +9,12 @@
 #import "ServiceConnector.h"
 #import "CDVInterface.h"
 
-
-
 @interface ServiceConnector()
 
 @property (nonatomic) NSData* receivedData;
 @property (nonatomic) CDVInterface *cordInterface;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId, *pushId;
 @property (nonatomic) NSString *startTime, *endTime;
-
-
-
 
 /**
  * Convert the Location into a Dictonary
@@ -141,6 +136,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
                                  locations, @"locations",//locations array full of locations
+                                 tourConfigId, @"tour_id",
                                  nil];
 
     NSError *writeError = nil;
