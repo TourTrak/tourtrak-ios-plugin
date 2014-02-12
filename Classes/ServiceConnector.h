@@ -35,7 +35,7 @@
 
 /**
  * Initialize the ServiceConnector with
- * the parameters needed to post to 
+ * the parameters needed to post to
  * the DCS Server
  * @param - DCSUrl
  * @param - Start Time
@@ -45,11 +45,10 @@
  *
  **/
 -(id) initWithParams:(NSString *)vDCSUrl
-                    :(NSString *)vStartTime
-                    :(NSString *)vEndTime
+                    :(NSNumber *)vStartTime
+                    :(NSNumber *)vEndTime
                     :(NSString *)vTourConfigId
                     :(NSString *)vRiderId;
-
 
 /**
  * Post the Location to the Server
@@ -71,8 +70,7 @@
  *           "speed": 0,
  *           "bearing": 37.444657,
  *           "time": 1359488523,
- *           "provider": "GPS",
- *			 "battery": 0.5
+ *           "provider": "GPS"
  *       },
  *       }
  *           .
@@ -80,6 +78,7 @@
  *           .
  *       }
  * ],
+ * "battery": 0.5
  * }
  *
  *
@@ -90,6 +89,5 @@
  * @param- the Location or Rider
  **/
 -(void)postLocations: (NSArray *)dbLocations;
-
 
 @end

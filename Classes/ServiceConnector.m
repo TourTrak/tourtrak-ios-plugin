@@ -9,12 +9,15 @@
 #import "ServiceConnector.h"
 #import "CDVInterface.h"
 
+
 @interface ServiceConnector()
 
 @property (nonatomic) NSData* receivedData;
 @property (nonatomic) CDVInterface *cordInterface;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId, *pushId;
-@property (nonatomic) NSString *startTime, *endTime;
+@property (nonatomic) NSNumber *startTime, *endTime;
+
+
 
 /**
  * Convert the Location into a Dictonary
@@ -23,7 +26,7 @@
  * @param- Location
  * @return- Dictonary
  **/
--(NSDictionary*)getDict:(LocationUpdates*)loc;
+-(NSDictionary*)getDict:(CLLocation*)loc;
 
 /**
  * Get all the locations in proper format
@@ -56,11 +59,11 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 #pragma mark - Init Function
 
 -(id) initWithParams:(NSString *)vDCSUrl
-                    :(NSString *)vStartTime
-                    :(NSString *)vEndTime
+                    :(NSNumber *)vStartTime
+                    :(NSNumber *)vEndTime
                     :(NSString *)vTourConfigId
                     :(NSString *)vRiderId{
-
+    
     self = [super init];
     if(self){
         
@@ -73,10 +76,10 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     return self;
 }
 
-
 #pragma mark - Utility Functions
 
 -(NSDictionary*)getDict:(LocationUpdates *)loc{
+    
     
     //dictionaryWithObjectsAndKeys takes the values first
     //then the keys
@@ -88,10 +91,12 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
                             loc.accuracy, @"accuracy",
                             loc.bearing, @"bearing", //will get this from the locaiton stored in db
                             loc.provider, @"provider",
-                            loc.battery, @"battery",
                             nil];
     
     return locDic;
+    
+    
+    
     
     
     
@@ -125,7 +130,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 #pragma mark - Post
 
 -(void)postLocations:(NSArray *)dbLocations{
-
+    
     
     //get all the locations in the proper format
     //in dictionaries all within an array
@@ -136,9 +141,9 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
                                  locations, @"locations",//locations array full of locations
-                                 tourConfigId, @"tour_id",
+                                 battery, @"battery",//current battery level
                                  nil];
-
+    
     NSError *writeError = nil;
     
     //serialize the dictionary into json
@@ -148,11 +153,11 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
         NSLog(@"Got an Error: %@", writeError);
     }else{
         NSString *jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"The JSON: %@", jsonStr);
-
+        //NSLog(@"The JSON: %@", jsonStr);
+        
     }
     
-
+    
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
                                     [NSURL URLWithString:@"http://devcycle.se.rit.edu/location_update/"]];//must update
@@ -167,7 +172,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     
     //set accept
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-
+    
     
     //add Value to the header
     [request addValue:[NSString stringWithFormat:@"%d",data.length] forHTTPHeaderField:@"Content-Length"];
@@ -176,6 +181,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     if(!connection){
         NSLog(@"Connection Failed");
     }
+
     
 }
 
@@ -186,7 +192,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    NSLog(@"The Server Returned: %@", json);
+    //NSLog(@"The Server Returned: %@", json);
 }
 
 
@@ -211,7 +217,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:_receivedData
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    NSLog(@"The Server Returned: %@", json);
+    //NSLog(@"The Server Returned: %@", json);
 
     
     //send the data to the delegate

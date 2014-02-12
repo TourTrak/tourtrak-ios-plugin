@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import "LocationUpdates.h"
 
 @interface LocationDBOpenHelper : NSObject {
     @private

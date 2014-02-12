@@ -152,7 +152,7 @@
     
     //Grab device battery level and set it.
     loc.battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
-
+    
     //set time - unix time since epoch in ms
     NSNumber *epochInMs = [[NSNumber alloc]initWithLongLong:(location.timestamp.timeIntervalSince1970 * 1000)];
     loc.time = epochInMs;
@@ -185,6 +185,7 @@
         NSLog(@"Failed to save - error: %@", [error localizedDescription]);
     }
     
+
 }
     
 #pragma mark -

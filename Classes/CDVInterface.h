@@ -22,6 +22,18 @@
 @property (retain, nonatomic) BGLocationTracking *locTracking;
 @property (retain, nonatomic) ServiceConnector *connector;
 
+#pragma-
+#pragma mark - Initialize Functions
+
+
+/**
+ * Set-up the Automatic start
+ * and end time for the current
+ * race.
+ *
+ **/
+- (void)scheduleStartEndTime;
+
 
 #pragma-
 #pragma mark - Sencha interface functions
@@ -29,7 +41,7 @@
 /**
  * Initialize the plugin and start tracking
  * The CDVInokedUrlCommand will contain a
- * json and command will have a size of 
+ * json and command will have a size of
  * one. The json will have the following:
  *      dcsUrl
  *      startTime
@@ -38,7 +50,7 @@
  *      riderId
  *
  *
- * @param - Json 
+ * @param - Json
  **/
 - (void)start:(CDVInvokedUrlCommand *)command;
 
@@ -47,15 +59,14 @@
  * tracking has been paused
  *
  **/
-- (void)resumeTracking:(CDVInvokedUrlCommand *)command;
+- (void)resume:(CDVInvokedUrlCommand *)command;
 
 /**
  * Pause Tracking assuming,
  * tracking has started or resumed
  *
  **/
-- (void)pauseTracking:(CDVInvokedUrlCommand *)command;
-
+- (void)pause:(CDVInvokedUrlCommand *)command;
 
 
 #pragma-

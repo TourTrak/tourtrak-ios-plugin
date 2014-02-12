@@ -2,11 +2,8 @@
 //  BGLocationTracking.m
 //  BGLocationTracking
 //
-//  Created by Alex Shmaliy on 8/20/13 modified by Chris Ketant.
+//  Created by Alex Shmaliy on 8/20/13.
 //  MIT Licensed
-//
-// TODO - Find out how to retrieve single location data
-//        at a time for algorithm sake
 //
 
 #import "BGLocationTracking.h"
@@ -22,7 +19,6 @@
 @property (strong, nonatomic) CDVInvokedUrlCommand *errorCB;
 @property (strong, nonatomic) NSDate *locationManagerCreationDate;
 @property BOOL isTracking;
-@property UIBackgroundTaskIdentifier bgTask;
 
 @end
 
@@ -33,7 +29,6 @@
 @synthesize successCB, errorCB;
 @synthesize locationManagerCreationDate;
 @synthesize isTracking;
-@synthesize bgTask;
 
 
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
@@ -46,25 +41,15 @@
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
         locationManager.distanceFilter = DISTANCE_FILTER_IN_METERS;
         locationManager.activityType = CLActivityTypeFitness;
-        [locationManager startUpdatingLocation];
-        isTracking=YES;
+        isTracking=false;
     }
     return self;
 }
 
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-   
-    // don't assume normal network access if this is being executed in the background.
-    // Tell OS that we are doing a background task that needs to run to completion. 
-    UIApplication* app = [UIApplication sharedApplication];
-    
-    bgTask = [app beginBackgroundTaskWithExpirationHandler:^{
-        [app endBackgroundTask:bgTask];
-    }];
-   
     if ([newLocation distanceFromLocation:oldLocation] >= MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS) {
-        NSLog(@"%@", [newLocation description]);
+        //NSLog(@"%@", [newLocation description]);
         [self.cordInterface insertCurrLocation:(newLocation)];
     }
     
@@ -72,13 +57,6 @@
     NSDate *currentDate = [NSDate date];
     if ([currentDate timeIntervalSinceDate:self.locationManagerCreationDate] >= LOCATION_MANAGER_LIFETIME_MAX) {
         //TODO: re-initialize here
-    }
-    
-    // Close the task when done!
-    if (bgTask != UIBackgroundTaskInvalid)
-    {
-        [app endBackgroundTask:bgTask];
-         bgTask = UIBackgroundTaskInvalid;
     }
 }
 
@@ -88,12 +66,13 @@
 }
 
 
+
 - (void)resumeTracking{
     if(!isTracking){
         [locationManager startUpdatingLocation];
         isTracking = true;
         NSLog(@"iOS: RESUMED TRACKING");
-
+        
     }
 }
 
