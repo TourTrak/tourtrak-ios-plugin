@@ -131,9 +131,9 @@
     
 }
 
--(void) resume:(CDVInvokedUrlCommand *)command{ [self.locTracking resumeTracking]; }
+-(void) resumeTracking:(CDVInvokedUrlCommand *)command{ [self.locTracking resumeTracking]; }
 
--(void) pause:(CDVInvokedUrlCommand *)command{ [self.locTracking pauseTracking]; }
+-(void) pauseTracking:(CDVInvokedUrlCommand *)command{ [self.locTracking pauseTracking]; }
 
 
 #pragma mark - Timer Schedulings

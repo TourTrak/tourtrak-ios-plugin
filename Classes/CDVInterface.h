@@ -52,14 +52,14 @@
  *
  * @param - Json
  **/
-- (void)start:(CDVInvokedUrlCommand *)command;
+- (void)startTracking:(CDVInvokedUrlCommand *)command;
 
 /**
  * Resume Tracking assuming,
  * tracking has been paused
  *
  **/
-- (void)resume:(CDVInvokedUrlCommand *)command;
+- (void)resumeTracking:(CDVInvokedUrlCommand *)command;
 
 /**
  * Pause Tracking assuming,
