@@ -11,4 +11,10 @@
     <access origin="*" />
     <preference name="fullscreen" value="true" />
     <preference name="webviewbounce" value="true" />
+    <gap:splash src="Resources/splash/Default~iphone.png" 
+            gap:platform="ios" width="320"  height="480" />
+    <gap:splash src="splash/ios/Default-568h@2x~iphone.png"
+            gap:platform="ios" width="320" height="480" />
+    <gap:splash src="splash/ios/Default@2x~iphone.png"
+            gap:platform="ios" width="320" height="480" />
 </widget>
