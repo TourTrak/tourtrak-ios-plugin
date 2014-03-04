@@ -10,10 +10,11 @@
 #import "CDVInterface.h"
 
 
+
 @interface ServiceConnector()
 
 @property (nonatomic) NSData* receivedData;
-@property (nonatomic) CDVInterface *cordInterface;
+@property (nonatomic) CDVInterface *cdvInterface;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId, *pushId;
 @property (nonatomic) NSNumber *startTime, *endTime;
 
@@ -36,6 +37,16 @@
  **/
 -(NSArray *)getLocations:(NSArray*)dbLocs;
 
+/**
+ * In the LocationUpdateResponse we received
+ * did the polling rate change? If so
+ * then we need to update our polling rate
+ * 
+ * @param- NSDicationary
+ * @return- BOOL
+ **/
+-(BOOL)isPollingRateChange:(NSDictionary *)json;
+
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
 
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
@@ -51,7 +62,7 @@
 @synthesize DCSUrl, startTime, endTime, tourConfigId, riderId;
 
 /*
- * URL to the SERVER
+ * PATH to the SERVER Location Update
  *
  */
 static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
@@ -62,7 +73,8 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
                     :(NSNumber *)vStartTime
                     :(NSNumber *)vEndTime
                     :(NSString *)vTourConfigId
-                    :(NSString *)vRiderId{
+                    :(NSString *)vRiderId
+                    :(CDVInterface *)vCDVInterface{
     
     self = [super init];
     if(self){
@@ -72,6 +84,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
         self.endTime = vEndTime;
         self.tourConfigId = vTourConfigId;
         self.riderId = vRiderId;
+        self.cdvInterface = vCDVInterface;
     }
     return self;
 }
@@ -127,6 +140,17 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     return locations;
 }
 
+-(BOOL)isPollingRateChange:(NSDictionary *)json{
+    //Get the value at the polling rate
+    NSNumber* nPollRate = [json objectForKey:@"polling_rate"];
+    int pollRate = [nPollRate intValue];
+    if(pollRate != self.cdvInterface.pollingRate){
+        [self.cdvInterface updatePollingRate:pollRate];
+        return TRUE;
+    }
+    return FALSE;
+}
+
 #pragma mark - Post
 
 -(void)postLocations:(NSArray *)dbLocations{
@@ -137,11 +161,13 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSArray *locations = [self getLocations:dbLocations];
     NSNumber *battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
     NSString *rId = ([riderId length] == 0 ) ? @"TcH4FR09ROSA4b42WJX6i+SFbTpuzcr06gszd9lHA4c=" : riderId;//this is temporary until its integrated with sencha
+    NSString *vTourConfigId = ([tourConfigId length] == 0) ? @"sussex" : tourConfigId;
     
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
                                  locations, @"locations",//locations array full of locations
                                  battery, @"battery",//current battery level
+                                 vTourConfigId, @"tour_id",//current tour_id
                                  nil];
     
     NSError *writeError = nil;
@@ -153,14 +179,14 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
         NSLog(@"Got an Error: %@", writeError);
     }else{
         NSString *jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        //NSLog(@"The JSON: %@", jsonStr);
+        NSLog(@"The JSON: %@", jsonStr);
         
     }
     
     
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString:@"http://devcycle.se.rit.edu/location_update/"]];//must update
+                                    [NSURL URLWithString:@"http://cycl-ops.se.rit.edu/location_update/"]];//must update
     //add Method
     [request setHTTPMethod:@"POST"];
     
@@ -192,7 +218,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    //NSLog(@"The Server Returned: %@", json);
+    NSLog(@"The Server Returned in request Returned Data: %@", json);
 }
 
 
@@ -217,7 +243,11 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:_receivedData
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    //NSLog(@"The Server Returned: %@", json);
+    NSLog(@"The Server Returned in Conn. Did Finish Loading: %@", json);
+    
+    //Check if the polling rate has changed
+    //on server side
+    [self isPollingRateChange:json];
 
     
     //send the data to the delegate

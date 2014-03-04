@@ -16,6 +16,8 @@
 #import <CoreLocation/CoreLocation.h>
 #import "LocationUpdates.h"
 
+//handle circular dependency
+@class CDVInterface;
 
 /**
  * The Delegate for the POST request
@@ -42,13 +44,15 @@
  * @param - End Time
  * @param - Tour Configuration ID
  * @param - Rider's ID
+ * @param - CDVInterface
  *
  **/
 -(id) initWithParams:(NSString *)vDCSUrl
                     :(NSNumber *)vStartTime
                     :(NSNumber *)vEndTime
                     :(NSString *)vTourConfigId
-                    :(NSString *)vRiderId;
+                    :(NSString *)vRiderId
+                    :(CDVInterface *)vCDVInterface;
 
 /**
  * Post the Location to the Server
@@ -85,6 +89,7 @@
  * RESPONSE
  * {
  * "rider_count": int
+ * "polling_rate": "string"
  * }
  * @param- the Location or Rider
  **/

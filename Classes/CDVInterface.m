@@ -7,6 +7,7 @@
 //
 
 #import "CDVInterface.h"
+#import "ServiceConnector.h"
 
 
 
@@ -15,8 +16,7 @@
 @property (nonatomic) int locCount;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId;
 @property (nonatomic) NSNumber *startTime, *endTime;
-@property (nonatomic, retain) NSTimer *startTimer, *endTimer;
-
+@property (nonatomic, retain) NSTimer *startTimer, *endTimer, *pollRateTimer;
 
 /**
  * Initialize
@@ -27,13 +27,21 @@
 - (void)initCDVInterface;
 
 /**
- * This is a temp function
- * used to determine when to
- * send the locations stored
- * in the db.
+ * Set-up the Automatic start
+ * and end time for the current
+ * race.
  *
  **/
-- (void)checkDB;
+- (void)scheduleStartEndTime;
+
+
+/**
+ * Schedule the polling rate
+ * with the default time of
+ * '600,000ms' or 10min
+ *
+ **/
+- (void)schedulePollingRate;
 
 /**
  * The task to be run
@@ -50,13 +58,28 @@
  **/
 - (void)runEndTimeTask;
 
+
+/**
+ * The task to be run
+ * when we hit the polling rate
+ * time. Send the Location data we
+ * we have currently stored.
+ **/
+-(void)postLocationUpdateRequestTask;
+
 @end
 
 
 @implementation CDVInterface
-@synthesize dbHelper, locTracking, connector;
+@synthesize dbHelper, locTracking, connector, pollingRate;
 @synthesize DCSUrl, startTime, endTime, tourConfigId, riderId;
-@synthesize startTimer, endTimer;
+@synthesize startTimer, endTimer, pollRateTimer;
+
+/**
+ * Represents the polling rate currently
+ * implemented by the plugin sent to by
+ * server. Rate is in Milliseconds
+ **/
 
 
 #pragma mark - Initialize
@@ -73,10 +96,13 @@
                                                                :startTime
                                                                :endTime
                                                                :tourConfigId
-                                                               :riderId];
+                                                               :riderId
+                                                               :self];
     
     //Set Current Device Battery Monitoring in order to get Battery percentage
     [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+    
+
     
     
 }
@@ -89,6 +115,8 @@
     if(self.dbHelper == nil && self.locTracking == nil && self.connector == nil){
         [self initCDVInterface];
     }
+    
+    self.pollingRate = 600;//default polling rate 600seconds = 10min
 
     //Second get the args in the command
     CDVPluginResult* pluginResult = nil;
@@ -113,7 +141,10 @@
             
             //Schedule the Automatic Start/End Timers
             [self scheduleStartEndTime];
-        
+            
+            //Schedule the Polling Timer
+            [self schedulePollingRate];
+            
         }else{//If all the arguments are nil then set them to empty string
             DCSUrl = tourConfigId = riderId = @"";
             startTime = endTime = 0;
@@ -176,39 +207,84 @@
     
 }
 
+-(void)schedulePollingRate{
+    
+    //Set Interval
+    NSTimeInterval rateInterval = (self.pollingRate * 0.001);//convert milliseconds to seconds
+
+    //Set Timer
+    pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:rateInterval
+                                                     target:self
+                                                   selector:@selector(postLocationUpdateRequestTask)
+                                                   userInfo:self
+                                                    repeats:YES];
+    //Need to add poll Rate Timer to main loop
+    //in order for it to execute
+    [[NSRunLoop currentRunLoop] addTimer:pollRateTimer forMode:NSRunLoopCommonModes];
+}
+
+
+
+-(BOOL)updatePollingRate:(int)serverPollRate{
+
+    
+    //check if the polling rate sent by server different
+    //from the current poll rate
+    if(self.pollingRate != serverPollRate){
+        
+        //if poll rate different, update the polling rate
+        self.pollingRate = serverPollRate;
+        
+        //Set Interval
+        NSTimeInterval rateInterval = (self.pollingRate * 0.001);//convert milliseconds to seconds
+        
+        //If the timer was already
+        //initialized, need to
+        //cancel the last one
+        if(pollRateTimer != NULL){
+            [pollRateTimer invalidate];
+            pollRateTimer = nil;
+        }
+        
+        //Set Timer
+        pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:rateInterval
+                                                         target:self
+                                                       selector:@selector(postLocationUpdateRequestTask)
+                                                       userInfo:self
+                                                        repeats:YES];
+        //Need to add poll Rate Timer to main loop
+        //in order for it to execute
+        [[NSRunLoop currentRunLoop] addTimer:pollRateTimer forMode:NSRunLoopCommonModes];
+        return TRUE;
+    }
+    
+    //Did not update poll rate
+    return FALSE;
+    
+    
+}
+
 -(void)runStartTimeTask{[self.locTracking resumeTracking];/*starts tracking*/}
 
 -(void)runEndTimeTask{[self.locTracking pauseTracking];/*stops tracking*/}
 
+-(void)postLocationUpdateRequestTask{
+    //get all the Locations we collected
+    [self.connector postLocations: [self getAllLocations]];
+    //clear out the internal storage
+    [self clearLocations];
+}
+
+
 
 #pragma mark - Sub Module Interface functions
--(void) insertCurrLocation:(CLLocation *)location{
 
-    self.locCount++;
-    [self.dbHelper insertLocation:(location)];
-    [self checkDB];//temp
-}
+-(void) insertCurrLocation:(CLLocation *)location{ [self.dbHelper insertLocation:(location)]; }
 
--(NSArray*) getAllLocations{
-    return [self.dbHelper getAllLocations];
-}
+-(NSArray*) getAllLocations{ return [self.dbHelper getAllLocations]; }
 
--(NSArray*) getLocations:(NSUInteger)size{
-    return [self.dbHelper getLocations:(size)];
-}
+-(NSArray*) getLocations:(NSUInteger)size{ return [self.dbHelper getLocations:(size)]; }
 
--(void) clearLocations{
-    [self.dbHelper clearLocations];
-}
-
-#pragma mark - Utility Function
-
--(void) checkDB{
-    if(self.locCount > 7){
-        [self.connector postLocations:[self getAllLocations]];
-        [self clearLocations];
-    }
-}
-
+-(void) clearLocations{ [self.dbHelper clearLocations]; }
 
 @end

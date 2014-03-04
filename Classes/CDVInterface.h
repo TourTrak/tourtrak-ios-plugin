@@ -16,27 +16,18 @@
 #import "BGLocationTracking.h"
 #import "ServiceConnector.h"
 
+//handle circular dependency
+@class ServiceConnector;
+
 @interface CDVInterface : CDVPlugin
 
 @property (retain, nonatomic) LocationDBOpenHelper *dbHelper;
 @property (retain, nonatomic) BGLocationTracking *locTracking;
 @property (retain, nonatomic) ServiceConnector *connector;
+@property long pollingRate;
 
 #pragma-
 #pragma mark - Initialize Functions
-
-
-/**
- * Set-up the Automatic start
- * and end time for the current
- * race.
- *
- **/
-- (void)scheduleStartEndTime;
-
-
-#pragma-
-#pragma mark - Sencha interface functions
 
 /**
  * Initialize the plugin and start tracking
@@ -52,7 +43,11 @@
  *
  * @param - Json
  **/
-- (void)startTracking:(CDVInvokedUrlCommand *)command;
+- (void)start:(CDVInvokedUrlCommand *)command;
+
+
+#pragma-
+#pragma mark - Sencha interface functions
 
 /**
  * Resume Tracking assuming,
@@ -66,7 +61,7 @@
  * tracking has started or resumed
  *
  **/
-- (void)pause:(CDVInvokedUrlCommand *)command;
+- (void)pauseTracking:(CDVInvokedUrlCommand *)command;
 
 
 #pragma-
@@ -108,6 +103,19 @@
  *
  **/
 - (void) clearLocations;
+#pragma -
+#pragma mark - Update State 
+/**
+ * Updating the Polling rate
+ * check in the server LocationUpdateResponse
+ * for a changed polling rate, if changed
+ * then update timer
+ *
+ * @param- Boolean, did the rate change
+ *
+ **/
+- (BOOL)updatePollingRate: (int)rate;
+
 
 
 @end
