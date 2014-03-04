@@ -210,7 +210,7 @@
 -(void)schedulePollingRate{
     
     //Set Interval
-    NSTimeInterval rateInterval = (self.pollingRate * 0.001);//convert milliseconds to seconds
+    NSTimeInterval rateInterval = (self.pollingRate);//seconds
 
     //Set Timer
     pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:rateInterval
@@ -236,7 +236,7 @@
         self.pollingRate = serverPollRate;
         
         //Set Interval
-        NSTimeInterval rateInterval = (self.pollingRate * 0.001);//convert milliseconds to seconds
+        NSTimeInterval rateInterval = (self.pollingRate);//seconds
         
         //If the timer was already
         //initialized, need to
