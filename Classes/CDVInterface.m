@@ -142,8 +142,6 @@
             //Schedule the Automatic Start/End Timers
             [self scheduleStartEndTime];
             
-            //Schedule the Polling Timer
-            [self schedulePollingRate];
             
         }else{//If all the arguments are nil then set them to empty string
             DCSUrl = tourConfigId = riderId = @"";
@@ -264,9 +262,29 @@
     
 }
 
--(void)runStartTimeTask{[self.locTracking resumeTracking];/*starts tracking*/}
+-(void)runStartTimeTask{
+    /*starts tracking*/
+    [self.locTracking resumeTracking];
+    
+    //Schedule the Polling Timer
+    [self schedulePollingRate];
+}
 
--(void)runEndTimeTask{[self.locTracking pauseTracking];/*stops tracking*/}
+-(void)runEndTimeTask{
+    /*stops tracking*/
+    [self.locTracking pauseTracking];
+    
+    //If the timer was already
+    //initialized, need to
+    //cancel the last one
+    if(pollRateTimer != NULL){
+        [pollRateTimer invalidate];
+        pollRateTimer = nil;
+    }
+
+    
+    
+}
 
 -(void)postLocationUpdateRequestTask{
     //get all the Locations we collected

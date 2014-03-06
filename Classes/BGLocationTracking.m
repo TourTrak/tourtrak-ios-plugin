@@ -11,7 +11,7 @@
 
 #define LOCATION_MANAGER_LIFETIME_MAX (60 * 60) // in seconds
 #define DISTANCE_FILTER_IN_METERS 10.0
-#define MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS 1.0 // in meters
+#define MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS 5.0 // in meters
 
 @interface BGLocationTracking ()
 
@@ -49,7 +49,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
     if ([newLocation distanceFromLocation:oldLocation] >= MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS) {
-        //NSLog(@"%@", [newLocation description]);
+        NSLog(@"%@", [newLocation description]);
         [self.cordInterface insertCurrLocation:(newLocation)];
     }
     
