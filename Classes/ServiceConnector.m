@@ -141,9 +141,10 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 }
 
 -(BOOL)isPollingRateChange:(NSDictionary *)json{
+    
     //Get the value at the polling rate
-    NSNumber* nPollRate = [json objectForKey:@"polling_rate"];
-    int pollRate = [nPollRate intValue];
+    NSNumber* nPollRate = json[@"poll_rate"];
+    double pollRate = [nPollRate doubleValue];
     if(pollRate != self.cdvInterface.pollingRate){
         [self.cdvInterface updatePollingRate:pollRate];
         return TRUE;
@@ -186,7 +187,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString:@"http://cycl-ops.se.rit.edu/location_update/"]];//must update
+                                    [NSURL URLWithString:@"http://devcycle.se.rit.edu/location_update/"]];//must update
     //add Method
     [request setHTTPMethod:@"POST"];
     
@@ -244,6 +245,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
     NSLog(@"The Server Returned in Conn. Did Finish Loading: %@", json);
+
     
     //Check if the polling rate has changed
     //on server side

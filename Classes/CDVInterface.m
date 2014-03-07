@@ -207,11 +207,8 @@
 
 -(void)schedulePollingRate{
     
-    //Set Interval
-    NSTimeInterval rateInterval = (self.pollingRate);//seconds
-
     //Set Timer
-    pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:rateInterval
+    pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.pollingRate
                                                      target:self
                                                    selector:@selector(postLocationUpdateRequestTask)
                                                    userInfo:self
@@ -225,16 +222,12 @@
 
 -(BOOL)updatePollingRate:(int)serverPollRate{
 
-    
     //check if the polling rate sent by server different
     //from the current poll rate
     if(self.pollingRate != serverPollRate){
         
         //if poll rate different, update the polling rate
         self.pollingRate = serverPollRate;
-        
-        //Set Interval
-        NSTimeInterval rateInterval = (self.pollingRate);//seconds
         
         //If the timer was already
         //initialized, need to
@@ -244,8 +237,10 @@
             pollRateTimer = nil;
         }
         
+
+        
         //Set Timer
-        pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:rateInterval
+        pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.pollingRate
                                                          target:self
                                                        selector:@selector(postLocationUpdateRequestTask)
                                                        userInfo:self

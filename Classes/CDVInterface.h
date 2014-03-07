@@ -24,7 +24,7 @@
 @property (retain, nonatomic) LocationDBOpenHelper *dbHelper;
 @property (retain, nonatomic) BGLocationTracking *locTracking;
 @property (retain, nonatomic) ServiceConnector *connector;
-@property long pollingRate;
+@property double pollingRate;
 
 #pragma-
 #pragma mark - Initialize Functions
