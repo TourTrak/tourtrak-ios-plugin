@@ -24,7 +24,14 @@
 @property (retain, nonatomic) LocationDBOpenHelper *dbHelper;
 @property (retain, nonatomic) BGLocationTracking *locTracking;
 @property (retain, nonatomic) ServiceConnector *connector;
-@property double pollingRate;
+/*
+ * Server Polling Rate
+ */
+@property double serverPollRate;
+/*
+ * Location Polling Rate
+ */
+@property double locPollRate;
 
 #pragma-
 #pragma mark - Initialize Functions
@@ -106,7 +113,20 @@
 #pragma -
 #pragma mark - Update State 
 /**
- * Updating the Polling rate
+ * Updating the Polling rate for sending to
+ * server check in the server 
+ * LocationUpdateResponse
+ * for a changed polling rate, if changed
+ * then update timer
+ *
+ * @param- Boolean, did the rate change
+ *
+ **/
+- (BOOL)updateServerPollRate: (int)nServerPollRate;
+
+/**
+ * Updating the Location Polling rate
+ * from the Location Manager
  * check in the server LocationUpdateResponse
  * for a changed polling rate, if changed
  * then update timer
@@ -114,7 +134,7 @@
  * @param- Boolean, did the rate change
  *
  **/
-- (BOOL)updatePollingRate: (int)rate;
+- (BOOL)updateLocationPollRate: (int)nLocPollRate;
 
 
 

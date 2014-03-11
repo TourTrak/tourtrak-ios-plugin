@@ -3,6 +3,7 @@
 //  BGLocationTracking
 //
 //  Created by Alex Shmaliy on 8/20/13.
+//  Modified by Christopher Ketant 
 //  MIT Licensed
 //
 

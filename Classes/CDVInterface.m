@@ -13,10 +13,13 @@
 
 @interface CDVInterface ()
 
+#define DEFAULT_SERVER_POLL_RATE 600
+#define DEFAULT_LOC_POLL_RATE 45
+
 @property (nonatomic) int locCount;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId;
 @property (nonatomic) NSNumber *startTime, *endTime;
-@property (nonatomic, retain) NSTimer *startTimer, *endTimer, *pollRateTimer;
+@property (nonatomic, retain) NSTimer *startTimer, *endTimer, *serverPollRateTimer, *locPollRateTimer;
 
 /**
  * Initialize
@@ -36,12 +39,19 @@
 
 
 /**
- * Schedule the polling rate
+ * Schedule the polling
  * with the default time of
- * '600,000ms' or 10min
+ * 600s
  *
  **/
-- (void)schedulePollingRate;
+- (void)scheduleServerPolling;
+
+/**
+ * Schedule the location
+ * polling with default time
+ * of 45s
+ **/
+- (void)scheduleLocPolling;
 
 /**
  * The task to be run
@@ -67,13 +77,21 @@
  **/
 -(void)postLocationUpdateRequestTask;
 
+/**
+ * Set default values for
+ * the rates for the
+ * server and location
+ * polling rate
+ **/
+-(void)setDefaultRates;
+
 @end
 
 
 @implementation CDVInterface
-@synthesize dbHelper, locTracking, connector, pollingRate;
+@synthesize dbHelper, locTracking, connector, serverPollRate, locPollRate;
 @synthesize DCSUrl, startTime, endTime, tourConfigId, riderId;
-@synthesize startTimer, endTimer, pollRateTimer;
+@synthesize startTimer, endTimer, serverPollRateTimer, locPollRateTimer;
 
 /**
  * Represents the polling rate currently
@@ -107,6 +125,12 @@
     
 }
 
+-(void)setDefaultRates{
+    self.serverPollRate = 10; //DEFAULT_SERVER_POLL_RATE
+    self.locPollRate = 5;//DEFAULT_LOC_POLL_RATE;
+
+}
+
 
 #pragma mark - Sencha Interface Functions
 -(void) start:(CDVInvokedUrlCommand *)command{
@@ -116,8 +140,7 @@
         [self initCDVInterface];
     }
     
-    self.pollingRate = 600;//default polling rate 600seconds = 10min
-
+    
     //Second get the args in the command
     CDVPluginResult* pluginResult = nil;
     NSString* javascript = nil;
@@ -138,6 +161,10 @@
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             javascript = [pluginResult toSuccessCallbackString:command.callbackId];
             
+            
+            
+            //Set default values
+            [self setDefaultRates];
             
             //Schedule the Automatic Start/End Timers
             [self scheduleStartEndTime];
@@ -160,9 +187,10 @@
     
 }
 
--(void) resumeTracking:(CDVInvokedUrlCommand *)command{ [self.locTracking resumeTracking]; }
+-(void) resumeTracking:(CDVInvokedUrlCommand *)command{[self.locTracking resumeTracking];}
 
--(void) pauseTracking:(CDVInvokedUrlCommand *)command{ [self.locTracking pauseTracking]; }
+
+-(void) pauseTracking:(CDVInvokedUrlCommand *)command{[self.locTracking pauseTracking];}
 
 
 #pragma mark - Timer Schedulings
@@ -205,49 +233,65 @@
     
 }
 
--(void)schedulePollingRate{
+-(void)scheduleServerPolling{
     
     //Set Timer
-    pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.pollingRate
+    serverPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.serverPollRate
                                                      target:self
                                                    selector:@selector(postLocationUpdateRequestTask)
                                                    userInfo:self
                                                     repeats:YES];
     //Need to add poll Rate Timer to main loop
     //in order for it to execute
-    [[NSRunLoop currentRunLoop] addTimer:pollRateTimer forMode:NSRunLoopCommonModes];
+    [[NSRunLoop currentRunLoop] addTimer:serverPollRateTimer forMode:NSRunLoopCommonModes];
+}
+
+-(void)scheduleLocPolling{
+    
+    NSLog(@"Scheduling Location Polling with Rate of %f", self.locPollRate);
+    
+    //Set Timer
+    locPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.locPollRate
+                                                        target:self.locTracking
+                                                      selector:@selector(resumeTracking)
+                                                      userInfo:self
+                                                       repeats:YES];
+    
+    //Need to add poll Rate Timer to main loop
+    //in order for it to execute
+    [[NSRunLoop currentRunLoop] addTimer:locPollRateTimer forMode:NSRunLoopCommonModes];
 }
 
 
 
--(BOOL)updatePollingRate:(int)serverPollRate{
+-(BOOL)updateServerPollRate:(int)nServerPollRate{
 
     //check if the polling rate sent by server different
     //from the current poll rate
-    if(self.pollingRate != serverPollRate){
+    if(self.serverPollRate != nServerPollRate){
         
         //if poll rate different, update the polling rate
-        self.pollingRate = serverPollRate;
+        self.serverPollRate = nServerPollRate;
         
         //If the timer was already
         //initialized, need to
         //cancel the last one
-        if(pollRateTimer != NULL){
-            [pollRateTimer invalidate];
-            pollRateTimer = nil;
+        if(serverPollRateTimer != NULL){
+            [serverPollRateTimer invalidate];
+            serverPollRateTimer = nil;
         }
         
 
         
         //Set Timer
-        pollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.pollingRate
+        serverPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.serverPollRate
                                                          target:self
                                                        selector:@selector(postLocationUpdateRequestTask)
                                                        userInfo:self
                                                         repeats:YES];
         //Need to add poll Rate Timer to main loop
         //in order for it to execute
-        [[NSRunLoop currentRunLoop] addTimer:pollRateTimer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop currentRunLoop] addTimer:serverPollRateTimer forMode:NSRunLoopCommonModes];
         return TRUE;
     }
     
@@ -257,12 +301,55 @@
     
 }
 
+-(BOOL)updateLocationPollRate:(int)nLocPollRate{
+    
+    //check if the polling rate sent by server different
+    //from current location polling rate
+    if(self.locPollRate != nLocPollRate){
+        
+        //if loc poll rate different, update the rate
+        self.locPollRate = nLocPollRate;
+        
+        //If the timer was already
+        //initialized, need to
+        //cancel the last one
+        if(locPollRateTimer != NULL){
+            [locPollRateTimer invalidate];
+            locPollRateTimer = nil;
+        }
+        
+        NSLog(@"Updating Location Polling Rate");
+        //Set Timer
+        locPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.locPollRate
+                                                            target:self.locTracking
+                                                          selector:@selector(resumeTracking)
+                                                          userInfo:self
+                                                           repeats:YES];
+        
+        //Need to add poll Rate Timer to main loop
+        //in order for it to execute
+        [[NSRunLoop currentRunLoop] addTimer:locPollRateTimer forMode:NSRunLoopCommonModes];
+        
+        return TRUE;
+    }
+    
+    //Did not update rate
+    return FALSE;
+    
+
+}
+
 -(void)runStartTimeTask{
-    /*starts tracking*/
+    //get the current location immediately
+    //on start up
     [self.locTracking resumeTracking];
     
-    //Schedule the Polling Timer
-    [self schedulePollingRate];
+    //Schedule the Location Polling Timer
+    [self scheduleLocPolling];
+
+    //Schedule the Server Polling Timer
+    [self scheduleServerPolling];
+
 }
 
 -(void)runEndTimeTask{
@@ -272,9 +359,9 @@
     //If the timer was already
     //initialized, need to
     //cancel the last one
-    if(pollRateTimer != NULL){
-        [pollRateTimer invalidate];
-        pollRateTimer = nil;
+    if(serverPollRateTimer != NULL){
+        [serverPollRateTimer invalidate];
+        serverPollRateTimer = nil;
     }
 
     

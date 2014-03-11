@@ -66,6 +66,7 @@
  * REQUEST
  * {
  *   "rider_id": "%uuid%",
+ *   "tour_id" : ""
  *   "locations": [
  *       {
  *           "latitude": 43.083958,
@@ -88,10 +89,10 @@
  *
  * RESPONSE
  * {
- * "rider_count": int
- * "polling_rate": "string"
+ * "server_polling_rate" : int,
+ * "location_polling_rate" : int
  * }
- * @param- the Location or Rider
+ * @param- Array of Locations
  **/
 -(void)postLocations: (NSArray *)dbLocations;
 

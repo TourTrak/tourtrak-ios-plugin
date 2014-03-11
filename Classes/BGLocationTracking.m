@@ -3,15 +3,16 @@
 //  BGLocationTracking
 //
 //  Created by Alex Shmaliy on 8/20/13.
+//  Modified b Christopher Ketant
 //  MIT Licensed
 //
 
 #import "BGLocationTracking.h"
 #import "CDVInterface.h"
 
-#define LOCATION_MANAGER_LIFETIME_MAX (60 * 60) // in seconds
+#define LOCATION_MANAGER_LIFETIME_MAX (1 * ( 60 * 60 ) ) // in seconds
 #define DISTANCE_FILTER_IN_METERS 10.0
-#define MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS 5.0 // in meters
+#define MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS 3.0 // in meters
 
 @interface BGLocationTracking ()
 
@@ -48,21 +49,22 @@
 
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    if ([newLocation distanceFromLocation:oldLocation] >= MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS) {
-        NSLog(@"%@", [newLocation description]);
-        [self.cordInterface insertCurrLocation:(newLocation)];
-    }
+        //Each time this method is called, it polls for a new location
+        //Based on a timer. This saves battery by turning off after
+        //each poll and only polls when the wait interval is finished
     
-    // if location manager is very old, need to re-init
-    NSDate *currentDate = [NSDate date];
-    if ([currentDate timeIntervalSinceDate:self.locationManagerCreationDate] >= LOCATION_MANAGER_LIFETIME_MAX) {
-        //TODO: re-initialize here
-    }
+    
+        NSLog(@"Time: %f | Polled New Location: %@", [[NSDate date] timeIntervalSince1970], [newLocation description]);
+        [self.cordInterface insertCurrLocation:(newLocation)];
+        
+        //Stop Updating Location Manager here
+        [self pauseTracking];
 }
 
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    //TODO: handle error
+    NSLog(@"iOS Location Manager Failed: %@", error);
+
 }
 
 

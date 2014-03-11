@@ -39,13 +39,23 @@
 
 /**
  * In the LocationUpdateResponse we received
- * did the polling rate change? If so
+ * did the server polling rate change? If so
  * then we need to update our polling rate
  * 
  * @param- NSDicationary
  * @return- BOOL
  **/
--(BOOL)isPollingRateChange:(NSDictionary *)json;
+-(BOOL)isServerPollRateChange:(NSDictionary *)json;
+
+/**
+ * In the LocationUpdateResponse we received
+ * did the location polling rate change? If so
+ * then we need to update our polling rate
+ *
+ * @param- NSDicationary
+ * @return- BOOL
+ **/
+-(BOOL)isLocPollRateChange:(NSDictionary *)json;
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
 
@@ -61,11 +71,6 @@
 @implementation ServiceConnector
 @synthesize DCSUrl, startTime, endTime, tourConfigId, riderId;
 
-/*
- * PATH to the SERVER Location Update
- *
- */
-static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 
 #pragma mark - Init Function
 
@@ -140,13 +145,25 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     return locations;
 }
 
--(BOOL)isPollingRateChange:(NSDictionary *)json{
+-(BOOL)isServerPollRateChange:(NSDictionary *)json{
     
     //Get the value at the polling rate
-    NSNumber* nPollRate = json[@"poll_rate"];
-    double pollRate = [nPollRate doubleValue];
-    if(pollRate != self.cdvInterface.pollingRate){
-        [self.cdvInterface updatePollingRate:pollRate];
+    NSNumber* nServerPollRate = json[@"server_polling_rate"];
+    double serverPollRate = [nServerPollRate doubleValue];
+    if(serverPollRate != self.cdvInterface.serverPollRate){
+        [self.cdvInterface updateServerPollRate:serverPollRate];
+        return TRUE;
+    }
+    return FALSE;
+}
+
+-(BOOL)isLocPollRateChange:(NSDictionary *)json{
+    
+    //Get the value at the polling rate
+    NSNumber* nLocPollRate = json[@"location_polling_rate"];
+    double locPollRate = [nLocPollRate doubleValue];
+    if(locPollRate != self.cdvInterface.locPollRate){
+        [self.cdvInterface updateLocationPollRate:locPollRate];
         return TRUE;
     }
     return FALSE;
@@ -180,14 +197,14 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
         NSLog(@"Got an Error: %@", writeError);
     }else{
         NSString *jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"The JSON: %@", jsonStr);
+        NSLog(@"Posting These Locations: %@", jsonStr);
         
     }
     
     
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString:@"http://devcycle.se.rit.edu/location_update/"]];//must update
+                                    [NSURL URLWithString: ([DCSUrl length] == 0) ? @"http://cycl-ops.se.rit.edu/location_update/" : DCSUrl] ];//must update
     //add Method
     [request setHTTPMethod:@"POST"];
     
@@ -209,7 +226,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
         NSLog(@"Connection Failed");
     }
 
-    
+    NSLog(@"Time: %f, Sent JSON", [[NSDate date] timeIntervalSince1970]);
 }
 
 #pragma mark - ServiceConnectorDelegate -
@@ -219,7 +236,7 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    NSLog(@"The Server Returned in request Returned Data: %@", json);
+    NSLog(@"The Server Returned in 'request Returned Data': %@", json);
 }
 
 
@@ -238,19 +255,20 @@ static NSString *SERVER_LOCATION_UPDATE_URL = @"/location_update/";
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection{
     
-    NSLog(@"Request Complete, received %d bytes of data", _receivedData.length);
-    
     NSError *error = nil;
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:_receivedData
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
-    NSLog(@"The Server Returned in Conn. Did Finish Loading: %@", json);
+    NSLog(@"The Server Returned in 'Conn. Did Finish Loading': %@", json);
 
     
-    //Check if the polling rate has changed
+    //Check if the server polling rate has changed
     //on server side
-    [self isPollingRateChange:json];
-
+    [self isServerPollRateChange:json];//comment out to test functonality
+    
+    //Check if the location polling rate has changed
+    //on server side
+    [self isLocPollRateChange:json];//comment out to test functionality
     
     //send the data to the delegate
     [self.delegate requestReturnedData:_receivedData];
