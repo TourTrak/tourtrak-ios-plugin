@@ -13,13 +13,15 @@
 
 @interface CDVInterface ()
 
-#define DEFAULT_SERVER_POLL_RATE 600
-#define DEFAULT_LOC_POLL_RATE 45
+#define DEFAULT_SERVER_POLL_RATE 10//600
+#define DEFAULT_LOC_POLL_RATE 8//45
+#define DEFAULT_SERVER_POLL_RANGE 8
 
 @property (nonatomic) int locCount;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId;
 @property (nonatomic) NSNumber *startTime, *endTime;
 @property (nonatomic, retain) NSTimer *startTimer, *endTimer, *serverPollRateTimer, *locPollRateTimer;
+@property double finalServerPollRate;
 
 /**
  * Initialize
@@ -85,6 +87,20 @@
  **/
 -(void)setDefaultRates;
 
+/**
+ * Choose a random number in range of
+ * serverPollRange -/+
+ * @return - random int in range
+ **/
+-(int)randomizeRange;
+
+/**
+ * Set the Final ServerPollRate
+ * which is, serverPollRange + serverPollRate
+ *
+ **/
+-(void)setFinalServerPollRate;
+
 @end
 
 
@@ -126,8 +142,10 @@
 }
 
 -(void)setDefaultRates{
-    self.serverPollRate = 10; //DEFAULT_SERVER_POLL_RATE
-    self.locPollRate = 5;//DEFAULT_LOC_POLL_RATE;
+    self.serverPollRate = DEFAULT_SERVER_POLL_RATE;
+    self.locPollRate = DEFAULT_LOC_POLL_RATE;
+    self.serverPollRange = DEFAULT_SERVER_POLL_RANGE;
+    [self setFinalServerPollRate];
 
 }
 
@@ -262,10 +280,46 @@
     [[NSRunLoop currentRunLoop] addTimer:locPollRateTimer forMode:NSRunLoopCommonModes];
 }
 
+-(void)runStartTimeTask{
+    //get the current location immediately
+    //on start up
+    [self.locTracking resumeTracking];
+    
+    //Schedule the Location Polling Timer
+    [self scheduleLocPolling];
 
+    //Schedule the Server Polling Timer
+    [self scheduleServerPolling];
+
+}
+
+-(void)runEndTimeTask{
+    /*stops tracking*/
+    [self.locTracking pauseTracking];
+    
+    //If the timer was already
+    //initialized, need to
+    //cancel the last one
+    if(serverPollRateTimer != NULL){
+        [serverPollRateTimer invalidate];
+        serverPollRateTimer = nil;
+    }
+
+    
+    
+}
+
+-(void)postLocationUpdateRequestTask{
+    //get all the Locations we collected
+    [self.connector postLocations: [self getAllLocations]];
+    //clear out the internal storage
+    [self clearLocations];
+}
+
+#pragma mark - Updating System States
 
 -(BOOL)updateServerPollRate:(int)nServerPollRate{
-
+    
     //check if the polling rate sent by server different
     //from the current poll rate
     if(self.serverPollRate != nServerPollRate){
@@ -281,14 +335,14 @@
             serverPollRateTimer = nil;
         }
         
-
+        
         
         //Set Timer
-        serverPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.serverPollRate
-                                                         target:self
-                                                       selector:@selector(postLocationUpdateRequestTask)
-                                                       userInfo:self
-                                                        repeats:YES];
+        serverPollRateTimer = [NSTimer scheduledTimerWithTimeInterval:self.finalServerPollRate
+                                                               target:self
+                                                             selector:@selector(postLocationUpdateRequestTask)
+                                                             userInfo:self
+                                                              repeats:YES];
         //Need to add poll Rate Timer to main loop
         //in order for it to execute
         [[NSRunLoop currentRunLoop] addTimer:serverPollRateTimer forMode:NSRunLoopCommonModes];
@@ -336,43 +390,33 @@
     //Did not update rate
     return FALSE;
     
-
+    
 }
 
--(void)runStartTimeTask{
-    //get the current location immediately
-    //on start up
-    [self.locTracking resumeTracking];
-    
-    //Schedule the Location Polling Timer
-    [self scheduleLocPolling];
-
-    //Schedule the Server Polling Timer
-    [self scheduleServerPolling];
-
-}
-
--(void)runEndTimeTask{
-    /*stops tracking*/
-    [self.locTracking pauseTracking];
-    
-    //If the timer was already
-    //initialized, need to
-    //cancel the last one
-    if(serverPollRateTimer != NULL){
-        [serverPollRateTimer invalidate];
-        serverPollRateTimer = nil;
+-(BOOL)updateServerPollRange:(int)nServerPollRange{
+    //check if the polling range sent by server different
+    //from current location polling range
+    if(self.serverPollRange != nServerPollRange){
+        
+        //if server poll range different, update the range
+        self.serverPollRange = nServerPollRange;
+        [self setFinalServerPollRate];
     }
-
     
+    //Did not update range
+    return FALSE;
     
 }
 
--(void)postLocationUpdateRequestTask{
-    //get all the Locations we collected
-    [self.connector postLocations: [self getAllLocations]];
-    //clear out the internal storage
-    [self clearLocations];
+-(int)randomizeRange{
+    int max = (int)self.serverPollRange;
+    int min = (int)(self.serverPollRange *= -1);
+    
+    return arc4random() % ((max - min) + 1) + (min);
+}
+
+-(void)setFinalServerPollRate{
+    self.finalServerPollRate = self.serverPollRate + [self randomizeRange];
 }
 
 

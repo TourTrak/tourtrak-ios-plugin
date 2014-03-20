@@ -32,6 +32,10 @@
  * Location Polling Rate
  */
 @property double locPollRate;
+/*
+ * Server Polling Range
+ */
+@property double serverPollRange;
 
 #pragma-
 #pragma mark - Initialize Functions
@@ -135,6 +139,19 @@
  *
  **/
 - (BOOL)updateLocationPollRate: (int)nLocPollRate;
+
+/**
+ * Updatint the polling range for sending to
+ * server. The range will be added to the
+ * server polling rate. The exact number
+ * chosen within the range will be at random
+ * so that every device does not push to 
+ * server at same time
+ *
+ * @param - Boolean, did the range change. 
+ *
+ **/
+- (BOOL)updateServerPollRange: (int)nServerPollRange;
 
 
 

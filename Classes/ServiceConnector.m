@@ -57,6 +57,16 @@
  **/
 -(BOOL)isLocPollRateChange:(NSDictionary *)json;
 
+/**
+ * In the LocationUpdateResponse we received
+ * did the server polling rnage change? if
+ * so then we need to update the system's range
+ *
+ * @param - NSDictionary, the json
+ * @return - BOOL, did it change
+ **/
+-(BOOL)isServerPollRangeChange: (NSDictionary *)json;
+
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
 
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
@@ -169,6 +179,17 @@
     return FALSE;
 }
 
+-(BOOL)isServerPollRangeChange:(NSDictionary *)json{
+    //Get the value at the polling rate
+    NSNumber* nServerPollRange = json[@"server_polling_range"];
+    double serverPollRange = [nServerPollRange doubleValue];
+    if(serverPollRange != self.cdvInterface.serverPollRange){
+        [self.cdvInterface updateServerPollRange:serverPollRange];
+        return TRUE;
+    }
+    return FALSE;
+}
+
 #pragma mark - Post
 
 -(void)postLocations:(NSArray *)dbLocations{
@@ -269,6 +290,7 @@
     //Check if the location polling rate has changed
     //on server side
     [self isLocPollRateChange:json];//comment out to test functionality
+
     
     //send the data to the delegate
     [self.delegate requestReturnedData:_receivedData];
