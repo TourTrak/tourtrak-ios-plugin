@@ -417,6 +417,7 @@
 
 -(void)setFinalServerPollRate{
     self.finalServerPollRate = self.serverPollRate + [self randomizeRange];
+    NSLog(@"Final Server Poll Rate: %f", self.finalServerPollRate);
 }
 
 
