@@ -19,7 +19,7 @@
 @property (strong, nonatomic) CDVInvokedUrlCommand *successCB;
 @property (strong, nonatomic) CDVInvokedUrlCommand *errorCB;
 @property (strong, nonatomic) NSDate *locationManagerCreationDate;
-@property BOOL isTracking;
+@property (nonatomic)  BOOL isTracking;
 
 @end
 
@@ -58,6 +58,9 @@
         [self.cordInterface insertCurrLocation:(newLocation)];
         
         //Stop Updating Location Manager here
+        //Resumes after time is elapsed, see CDVInterface.m
+        //in scheduleLocPolling method. The scheduleLocPolling
+        //resumes it after interval
         [self pauseTracking];
 }
 
@@ -65,6 +68,10 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"iOS Location Manager Failed: %@", error);
 
+}
+
+- (BOOL)isTracking{
+    return isTracking;
 }
 
 

@@ -26,6 +26,13 @@
 -(id) initWithCDVInterface: (CDVInterface *)cordova;
 
 /**
+ * Are we currently tracking
+ *
+ *@return - BOOL
+ **/
+-(BOOL) isTracking;
+
+/**
  * Resume Tracking
  *
  **/
