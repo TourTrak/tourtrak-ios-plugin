@@ -23,9 +23,6 @@
             </feature>
         </config-file>
 
-        <!-- Algorithm -->
-        <header-file src="Classes/PushAlgorithm.h"/>
-        <source-file src="Classes/PushAlgorithm.m"/>
         <!--CoreLocation -->
         <header-file src="Classes/BGLocationTracking.h"/>
         <source-file src="Classes/BGLocationTracking.m"/>
