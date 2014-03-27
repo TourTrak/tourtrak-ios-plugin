@@ -41,7 +41,7 @@
  * In the LocationUpdateResponse we received
  * did the server polling rate change? If so
  * then we need to update our polling rate
- * 
+ *
  * @param- NSDicationary
  * @return- BOOL
  **/
@@ -90,10 +90,10 @@
                     :(NSString *)vTourConfigId
                     :(NSString *)vRiderId
                     :(CDVInterface *)vCDVInterface{
-    
+
     self = [super init];
     if(self){
-        
+
         self.DCSUrl = vDCSUrl;
         self.startTime = vStartTime;
         self.endTime = vEndTime;
@@ -107,8 +107,8 @@
 #pragma mark - Utility Functions
 
 -(NSDictionary*)getDict:(LocationUpdates *)loc{
-    
-    
+
+
     //dictionaryWithObjectsAndKeys takes the values first
     //then the keys
     NSDictionary *locDic = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -120,43 +120,43 @@
                             loc.bearing, @"bearing", //will get this from the locaiton stored in db
                             loc.provider, @"provider",
                             nil];
-    
+
     return locDic;
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 }
 
 -(NSArray*)getLocations:(NSArray *)dbLocs{
-    
+
     //Array of the locations to send
     NSMutableArray *locations = [[NSMutableArray alloc]init];
-    
 
-    
+
+
     int size = [dbLocs count];
-    
+
     if(size > 0){
-    
+
         for (int index=0; index<size; index++) {
-        
+
             //create the dictionary object that will be sent as json
             NSDictionary *dict = [self getDict: [dbLocs objectAtIndex:index] ];
-        
+
             //add the location dictionary
             //to the locations array
             [locations addObject:dict];
         }
     }
-    
+
     return locations;
 }
 
 -(BOOL)isServerPollRateChange:(NSDictionary *)json{
-    
+
     //Get the value at the polling rate
     NSNumber* nServerPollRate = json[@"server_polling_rate"];
     double serverPollRate = [nServerPollRate doubleValue];
@@ -168,7 +168,7 @@
 }
 
 -(BOOL)isLocPollRateChange:(NSDictionary *)json{
-    
+
     //Get the value at the polling rate
     NSNumber* nLocPollRate = json[@"location_polling_rate"];
     double locPollRate = [nLocPollRate doubleValue];
@@ -193,55 +193,60 @@
 #pragma mark - Post
 
 -(void)postLocations:(NSArray *)dbLocations{
-    
-    
+
+
     //get all the locations in the proper format
     //in dictionaries all within an array
     NSArray *locations = [self getLocations:dbLocations];
     NSNumber *battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
     NSString *rId = ([riderId length] == 0 ) ? @"TcH4FR09ROSA4b42WJX6i+SFbTpuzcr06gszd9lHA4c=" : riderId;//this is temporary until its integrated with sencha
     NSString *vTourConfigId = ([tourConfigId length] == 0) ? @"sussex" : tourConfigId;
-    
+
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
                                  locations, @"locations",//locations array full of locations
                                  battery, @"battery",//current battery level
                                  vTourConfigId, @"tour_id",//current tour_id
                                  nil];
-    
+
     NSError *writeError = nil;
-    
+
     //serialize the dictionary into json
     NSData *data = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:&writeError];
-    
+
     if(!data){
         NSLog(@"Got an Error: %@", writeError);
     }else{
         NSString *jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSLog(@"Posting These Locations: %@", jsonStr);
-        
+
     }
-    
-    
+
+
+    NSString *dcsLocationAPI = @"location_update";
+    NSString *dcsLocationUpdatePushUrl = [NSString stringWithFormat:@"%@/%@/", DCSUrl, dcsLocationAPI];
+
+    NSLog(@"Sending locations to %@: ", dcsLocationUpdatePushUrl);
+
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString: ([DCSUrl length] == 0) ? @"http://cycl-ops.se.rit.edu/location_update/" : DCSUrl] ];//must update
+                                    [NSURL URLWithString: ([DCSUrl length] == 0) ? @"http://cycl-ops.se.rit.edu/location_update/" : dcsLocationUpdatePushUrl] ];//must update
     //add Method
     [request setHTTPMethod:@"POST"];
-    
+
     //set data as the POST body
     [request setHTTPBody:data];
-    
+
     //set the content type to JSON
     [request setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-    
+
     //set accept
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    
-    
+
+
     //add Value to the header
     [request addValue:[NSString stringWithFormat:@"%d",data.length] forHTTPHeaderField:@"Content-Length"];
-    
+
     NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     if(!connection){
         NSLog(@"Connection Failed");
@@ -275,23 +280,23 @@
 -(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge{}
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection{
-    
+
     NSError *error = nil;
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:_receivedData
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
     NSLog(@"The Server Returned in 'Conn. Did Finish Loading': %@", json);
 
-    
+
     //Check if the server polling rate has changed
     //on server side
     [self isServerPollRateChange:json];//comment out to test functonality
-    
+
     //Check if the location polling rate has changed
     //on server side
     [self isLocPollRateChange:json];//comment out to test functionality
 
-    
+
     //send the data to the delegate
     [self.delegate requestReturnedData:_receivedData];
 }
