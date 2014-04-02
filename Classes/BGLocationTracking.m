@@ -20,6 +20,7 @@
 @property (strong, nonatomic) CDVInvokedUrlCommand *errorCB;
 @property (strong, nonatomic) NSDate *locationManagerCreationDate;
 @property (nonatomic)  BOOL isTracking;
+@property UIBackgroundTaskIdentifier bgTask;
 
 @end
 
@@ -30,6 +31,7 @@
 @synthesize successCB, errorCB;
 @synthesize locationManagerCreationDate;
 @synthesize isTracking;
+@synthesize bgTask;
 
 
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
@@ -53,6 +55,13 @@
         //Based on a timer. This saves battery by turning off after
         //each poll and only polls when the wait interval is finished
     
+        // don't assume normal network access if this is being executed in the background.
+        // Tell OS that we are doing a background task that needs to run to completion. 
+        UIApplication* app = [UIApplication sharedApplication];
+        
+        bgTask = [app beginBackgroundTaskWithExpirationHandler:^{
+            [app endBackgroundTask:bgTask];
+        }];
     
         NSLog(@"Time: %f | Polled New Location: %@", [[NSDate date] timeIntervalSince1970], [newLocation description]);
         [self.cordInterface insertCurrLocation:(newLocation)];
@@ -62,6 +71,13 @@
         //in scheduleLocPolling method. The scheduleLocPolling
         //resumes it after interval
         [self pauseTracking];
+        
+        // Close the task when done!
+        if (bgTask != UIBackgroundTaskInvalid)
+        {
+            [app endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }
 }
 
 
