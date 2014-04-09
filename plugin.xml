@@ -41,6 +41,10 @@
         <!-- Cordova Interface -->
         <header-file src="Classes/CDVInterface.h"/>
         <source-file src="Classes/CDVInterface.m"/>
+        
+        <!-- APP DELEGATE -->
+        <header-file src="Classes/AppDelegate.h"/>
+        <source-file src="Classes/AppDelegate.m"/>
 
 	<!-- System Framework Files -->
         <framework src="CoreData.framework"/>

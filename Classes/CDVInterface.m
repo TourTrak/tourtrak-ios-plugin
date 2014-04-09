@@ -24,7 +24,6 @@
 
 
 
-
 /**
  * Set default values for
  * the rates for the
@@ -64,7 +63,6 @@
 @synthesize isRaceEnd, isRaceStart, isBetaRaceStart, isBetaRaceEnd;
 @synthesize isActualRace, isBetaRace;
 
-
 /**
  * Represents the polling rate currently
  * implemented by the plugin sent to by
@@ -100,11 +98,12 @@
 
 #pragma mark - Sencha Interface Functions
 -(void) start:(CDVInvokedUrlCommand *)command{
+
     
     //Second get the args in the command
     CDVPluginResult* pluginResult = nil;
     NSString* javascript = nil;
-
+    
     @try {
         //The args we are expecting
         DCSUrl = [[command.arguments objectAtIndex:0]  objectForKey:@"dcsUrl"];
@@ -112,7 +111,6 @@
         startTime = [[command.arguments objectAtIndex:0]  objectForKey:@"startTime"];
         endBetaTime = [[command.arguments objectAtIndex:0]  objectForKey:@"endBetaTime"];
         endTime = [[command.arguments objectAtIndex:0]  objectForKey:@"endTime"];
-        endTimeBeta = [[command.arguments objectAtIndex:0] objectForKey:@"endBetaTime"];
         tourConfigId = [[command.arguments objectAtIndex:0]  objectForKey:@"tourId"];
         riderId = [[command.arguments objectAtIndex:0]  objectForKey:@"riderId"];
         
@@ -134,7 +132,7 @@
             
             //begins tracking on init
             self.locTracking = [[BGLocationTracking alloc]initWithCDVInterface: self];
-
+            
             //set up service connector
             self.connector = [[ServiceConnector alloc]initWithParams   :DCSUrl
                                                                        :startTime
@@ -148,11 +146,14 @@
             
             
             //Add to Appdelegate
-            self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-            [self.appDelegate addCDVInterface:self];
+            //self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            //[self.appDelegate addCDVInterface:self];
             
             //Start Tracking immediately
             [self.locTracking resumeTracking];
+            
+
+            
             
         }else{//If all the arguments are nil then set them to empty string
             DCSUrl = tourConfigId = riderId = @"";
@@ -163,12 +164,12 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_JSON_EXCEPTION
                                          messageAsString:[exception reason]];
         javascript = [pluginResult toErrorCallbackString:command.callbackId];
-
+        
     }@finally {//Callback to Javascript
         [self writeJavascript:javascript];
     }
-
-
+    
+    
 }
 
 -(void) resumeTracking:(CDVInvokedUrlCommand *)command{
@@ -192,7 +193,7 @@
 #pragma mark - Update Rates
 
 -(BOOL)updateServerPollRate:(int)nServerPollRate{
-
+    
     //check if the polling rate sent by server different
     //from the current poll rate
     if(self.serverPollRate != nServerPollRate && (nServerPollRate != 0)){
@@ -200,15 +201,15 @@
         //if poll rate different, update the polling rate
         self.serverPollRate = nServerPollRate;
     }
-
+    
     //Did not update poll rate
     return FALSE;
-
-
+    
+    
 }
 
 -(BOOL)updateLocationPollRate:(int)nLocPollRate{
-
+    
     //check if the polling rate sent by server different
     //from current location polling rate
     if(self.locPollRate != nLocPollRate && (nLocPollRate != 0)){
@@ -218,24 +219,25 @@
 
         return TRUE;
     }
-
+    
     //Did not update rate
     return FALSE;
-
-
+    
+    
 }
 
 -(BOOL)updateServerPollRange:(int)nServerPollRange{
     //check if the polling range sent by server different
     //from current location polling range
     if(self.serverPollRange != nServerPollRange && (nServerPollRange != 0)){
+        
         //if server poll range different, update the range
         self.serverPollRange = nServerPollRange;
     }
-
+    
     //Did not update range
     return FALSE;
-
+    
 }
 
 #pragma mark - Sub Module Interface functions
@@ -255,7 +257,7 @@
 -(int)randomizeRange{
     int max = (int)self.serverPollRange;
     int min = (int)(self.serverPollRange *= -1);
-
+    
     return arc4random() % ((max - min) + 1) + (min);
 }
 
