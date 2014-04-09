@@ -32,7 +32,7 @@
 
 @implementation AppDelegate
 
-@synthesize window, viewController, cdv;
+@synthesize window, viewController;
 
 - (id)init
 {
@@ -130,10 +130,6 @@
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-}
-
-- (void)addCDVInterface:(CDVInterface*)vCordova{
-    cdv = vCordova;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{

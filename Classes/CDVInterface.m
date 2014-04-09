@@ -20,7 +20,6 @@
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId;
 @property (nonatomic) NSNumber *startTime, *endTime, *startBetaTime, *endBetaTime;
 @property BOOL isBetaRace, isActualRace;
-@property (nonatomic) AppDelegate *appDelegate;
 
 
 
@@ -56,7 +55,6 @@
 @implementation CDVInterface
 
 @synthesize dbHelper, locTracking, connector;
-@synthesize appDelegate;
 @synthesize DCSUrl, startBetaTime, startTime, endBetaTime, endTime, tourConfigId, riderId;
 @synthesize serverPollRate, locPollRate, finalServerPollRate;
 @synthesize startDateTime, endDateTime, betaStartDateTime, betaEndDateTime;

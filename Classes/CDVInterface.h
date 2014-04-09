@@ -15,7 +15,6 @@
 #import "LocationDBOpenHelper.h"
 #import "BGLocationTracking.h"
 #import "ServiceConnector.h"
-#import "AppDelegate.h"
 
 //handle circular dependency
 @class ServiceConnector;
