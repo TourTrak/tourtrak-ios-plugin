@@ -36,6 +36,7 @@
 @synthesize prevDateTime;
 
 
+
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
     self = [super init];
     
@@ -140,9 +141,7 @@
         //Stop Tracking Since Race Over
         [self pauseTracking];
     };
-    
-    
-    
+
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
