@@ -19,7 +19,7 @@
 
 @property (nonatomic) int locCount;
 @property (nonatomic) NSString *DCSUrl, *tourConfigId, *riderId;
-@property (nonatomic) NSNumber *startTime, *endTime;
+@property (nonatomic) NSNumber *startTime, *endTime, *startTimeBeta, *endTimeBeta;
 @property (nonatomic, retain) NSTimer *startTimer, *endTimer, *serverPollRateTimer, *locPollRateTimer;
 @property double finalServerPollRate;
 
@@ -106,7 +106,7 @@
 
 @implementation CDVInterface
 @synthesize dbHelper, locTracking, connector, serverPollRate, locPollRate;
-@synthesize DCSUrl, startTime, endTime, tourConfigId, riderId;
+@synthesize DCSUrl, startTime, startTimeBeta, endTime, endTimeBeta, tourConfigId, riderId;
 @synthesize startTimer, endTimer, serverPollRateTimer, locPollRateTimer;
 
 /**
@@ -148,7 +148,9 @@
         //The args we are expecting
         DCSUrl = [[command.arguments objectAtIndex:0]  objectForKey:@"dcsUrl"];
         startTime = [[command.arguments objectAtIndex:0]  objectForKey:@"startTime"];
+        startTimeBeta = [[command.arguments objectAtIndex:0] objectForKey:@"startBetaTime"];
         endTime = [[command.arguments objectAtIndex:0]  objectForKey:@"endTime"];
+        endTimeBeta = [[command.arguments objectAtIndex:0] objectForKey:@"endBetaTime"];
         tourConfigId = [[command.arguments objectAtIndex:0]  objectForKey:@"tourId"];
         riderId = [[command.arguments objectAtIndex:0]  objectForKey:@"riderId"];
 
