@@ -10,9 +10,7 @@
 #import "BGLocationTracking.h"
 #import "CDVInterface.h"
 
-#define LOCATION_MANAGER_LIFETIME_MAX (1 * ( 60 * 60 ) ) // in seconds
-#define DISTANCE_FILTER_IN_METERS 10.0
-#define MINIMUM_DISTANCE_BETWEEN_DIFFERENT_LOCATIONS 3.0 // in meters
+#define DISTANCE_FILTER_IN_METERS 3.0 //meters
 
 @interface BGLocationTracking ()
 
@@ -34,7 +32,6 @@
 @synthesize locationManagerCreationDate;
 @synthesize isTracking, bgTask;
 @synthesize prevDateTime;
-
 
 
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
@@ -70,7 +67,7 @@
         [app endBackgroundTask:bgTask];
     }];
     
-    NSLog(@"Time: %f | Polled New Location: %@", [[NSDate date] timeIntervalSince1970], [newLocation description]);
+    NSLog(@"Polled New Location: %@",[newLocation description]);
     
     [self stateMachine:newLocation];
     
@@ -93,11 +90,14 @@
     if(![cordInterface isRaceStarted:currDateTime] &&
        ![cordInterface isRaceEnded:currDateTime]){
         //do nothing
+        NSLog(@"Beta & Actual Race has not started and not Ended");
     }
     
     //Race has started and not ended
     if([cordInterface isRaceStarted:currDateTime] &&
        ![cordInterface isRaceEnded:currDateTime]){
+        
+        NSLog(@"%@ has Started", [cordInterface getTypeofRace]);
         
         //Check for null of initial Start/Date
         if(prevDateTime != NULL){
@@ -108,20 +108,19 @@
             //If the difference is greater than loc poll rate
             if(diff1 >= cordInterface.locPollRate){
                 
+                NSLog(@"Location is in Poll Rate Range so store it");
+                
                 //Add to DB
                 [cordInterface insertCurrLocation:currLocation];
             }
-        
-            NSLog(@"Geo Sample Rate: %f sec", cordInterface.locPollRate);
-            NSLog(@"Curr Time: %@", currDateTime);
-            NSLog(@"Initial Time: %@", prevDateTime);
-            NSLog(@"Difference in Times: %f", diff1);
             
             //Is diff in prev time and curr loc time greater than server poll rate
             double diff2 = [currDateTime timeIntervalSinceDate:prevDateTime];
             
             //if the diff greater than server poll rate
             if (diff2 >= cordInterface.finalServerPollRate) {
+                
+                NSLog(@"Pushing to Server");
                 
                 //push to server
                 [cordInterface pushLocationUpdates];
@@ -138,10 +137,14 @@
     if([cordInterface isRaceStarted:currDateTime] &&
        [cordInterface isRaceEnded:currDateTime]){
         
+        NSLog(@"Races have ended, STOP TRACKING NOW");
+        
         //Stop Tracking Since Race Over
         [self pauseTracking];
     };
-
+    
+    
+    
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {

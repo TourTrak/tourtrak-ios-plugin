@@ -24,10 +24,9 @@
 
 
 /**
- * Set default values for
- * the rates for the
- * server and location
- * polling rate
+ * Initial all the values
+ * associated with the system
+ * as well as state variables
  **/
 -(void)initValues;
 
@@ -45,10 +44,12 @@
  **/
 -(void)setFinalServerPollRate;
 
+/*
+ * Compare NSDates
+ *
+ */
 -(BOOL)compareDates:(NSDate *)date1
                    :(NSDate *)date2;
-
-
 @end
 
 
@@ -61,11 +62,6 @@
 @synthesize isRaceEnd, isRaceStart, isBetaRaceStart, isBetaRaceEnd;
 @synthesize isActualRace, isBetaRace;
 
-/**
- * Represents the polling rate currently
- * implemented by the plugin sent to by
- * server. Rate is in Milliseconds
- **/
 
 -(void)initValues{
     //Set up Rates
@@ -143,15 +139,11 @@
             [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
             
             
-            //Add to Appdelegate
-            //self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-            //[self.appDelegate addCDVInterface:self];
-            
             //Start Tracking immediately
+            //Location is the only way we can determine the time
+            //so we must start tracking immediately and check
+            //the time using each location received
             [self.locTracking resumeTracking];
-            
-
-            
             
         }else{//If all the arguments are nil then set them to empty string
             DCSUrl = tourConfigId = riderId = @"";
@@ -163,11 +155,14 @@
                                          messageAsString:[exception reason]];
         javascript = [pluginResult toErrorCallbackString:command.callbackId];
         
+        NSLog(@"NSException Caught.");
+        NSLog( @"Name: %@", exception.name);
+        NSLog( @"Reason: %@", exception.reason );
+        return;
+        
     }@finally {//Callback to Javascript
         [self writeJavascript:javascript];
     }
-    
-    
 }
 
 -(void) resumeTracking:(CDVInvokedUrlCommand *)command{
@@ -177,14 +172,6 @@
 
 -(void) pauseTracking:(CDVInvokedUrlCommand *)command{
     [self.locTracking pauseTracking];
-}
-
-
--(void)pushLocationUpdates{
-    //get all the Locations we collected
-    [self.connector postLocations: [self getAllLocations]];
-    //clear out the internal storage
-    [self clearLocations];
 }
 
 
@@ -202,8 +189,6 @@
     
     //Did not update poll rate
     return FALSE;
-    
-    
 }
 
 -(BOOL)updateLocationPollRate:(int)nLocPollRate{
@@ -220,8 +205,6 @@
     
     //Did not update rate
     return FALSE;
-    
-    
 }
 
 -(BOOL)updateServerPollRange:(int)nServerPollRange{
@@ -235,7 +218,6 @@
     
     //Did not update range
     return FALSE;
-    
 }
 
 #pragma mark - Sub Module Interface functions
@@ -247,6 +229,13 @@
 -(NSArray*) getLocations:(NSUInteger)size{ return [self.dbHelper getLocations:(size)]; }
 
 -(void) clearLocations{ [self.dbHelper clearLocations]; }
+
+-(void)pushLocationUpdates{
+    //get all the Locations we collected
+    [self.connector postLocations: [self getAllLocations]];
+    //clear out the internal storage
+    [self clearLocations];
+}
 
 
 
@@ -261,7 +250,20 @@
 
 -(void)setFinalServerPollRate{
     self.finalServerPollRate = self.serverPollRate + [self randomizeRange];
-    NSLog(@"Final Server Poll Rate: %f", self.finalServerPollRate);
+}
+
+#pragma mark - Race States
+
+-(NSString *)getTypeofRace{
+    //pass in current date/time
+    [self updateRaceState:[NSDate date]];
+    
+    if(isBetaRace) return @"Beta Race";
+    
+    if(isActualRace) return @"Actual Race";
+    
+    return @"No Race, Beta & Actual are done";
+    
 }
 
 -(NSDate *)getCurrRaceStart{
@@ -321,7 +323,7 @@
     //1- Beta Race has not started and Actual Race has not started
     //2- Beta Race has started but not finished
     //3- Beta Race has started and Finished
-    //4- Actual Race has not started and not ended but we are not in BetaRace
+    //4- Actual Race has not started and not ended but we finished BetaRace
     //5- Actual Race Started but not finished
     //6- Actual Race has started and finished
     
@@ -341,9 +343,6 @@
     
     //if Actual Race started and finished
     if(isRaceStart && isRaceEnd) isActualRace=NO;
-    
-    
-    
 }
 
 -(BOOL)compareDates:(NSDate *)date1
@@ -364,8 +363,4 @@
             break;
     }
 }
-
-
-
-
 @end

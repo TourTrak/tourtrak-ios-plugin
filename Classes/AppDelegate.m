@@ -133,11 +133,11 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
-    NSLog(@"Did Enter BG");
+    NSLog(@"Did Enter Background");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application{
-    NSLog(@"Did Enter FG");
+    NSLog(@"Did Enter Foreground");
 }
 
 @end

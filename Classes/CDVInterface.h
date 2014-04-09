@@ -55,7 +55,7 @@
 
 
 #pragma-
-#pragma mark - Initialize Functions
+#pragma mark - Sencha interface functions
 
 /**
  * Initialize the plugin and start tracking
@@ -74,10 +74,6 @@
  * @param - Json
  **/
 - (void)start:(CDVInvokedUrlCommand *)command;
-
-
-#pragma-
-#pragma mark - Sencha interface functions
 
 /**
  * Resume Tracking assuming,
@@ -128,16 +124,41 @@
  * that are in the coredata
  * emtpy them
  *
- * @param - size
- * @return - Array of locationsw
  *
  **/
 - (void) clearLocations;
 
+#pragma -
+#pragma mark - Race States
+
+/*
+ * What type of Race are we
+ * in, Beta or Actual
+ * @return - Beta or Actual
+ */
+-(NSString *)getTypeofRace;
+
+/*
+ * Get the Current Start Time
+ * We are either in Beta or Actual
+ * @return - Start DateTime
+ */
 -(NSDate *)getCurrRaceStart;
 
+/*
+ * Did the Race Start, either
+ * Beta or Actual race
+ * @param - the DateTime of the current Location
+ * @return - if we started
+ */
 - (BOOL)isRaceStarted:(NSDate *)locStartDate;
 
+/*
+ * Did the Race End, either
+ * Beta or Actual race
+ * @param - the DateTime of the current Location
+ * @return - if we started
+ */
 - (BOOL)isRaceEnded:(NSDate *)locEndDate;
 
 /**
