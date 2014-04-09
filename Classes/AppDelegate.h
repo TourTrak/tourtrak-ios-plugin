@@ -28,6 +28,7 @@
 #import <UIKit/UIKit.h>
 
 #import <Cordova/CDVViewController.h>
+#import "CDVInterface.h"
 
 @interface AppDelegate : NSObject <UIApplicationDelegate>{}
 
@@ -38,5 +39,10 @@
 
 @property (nonatomic, strong) IBOutlet UIWindow* window;
 @property (nonatomic, strong) IBOutlet CDVViewController* viewController;
+@property (nonatomic,retain) CDVInterface* cdv;
+
+
+//Add Cordova Interface to App Delegate
+- (void)addCDVInterface:(CDVInterface*)vCordova;
 
 @end

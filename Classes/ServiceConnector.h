@@ -4,10 +4,6 @@
 //
 // Sends the Location Data to the Server
 //
-// TODO- 1. Get Request: getConfig() REQUEST[] RESPONSE[TourConfigData]
-// TODO- 2. Post Request: register() REQUEST[OS, Device, tourId] RESPONSE[rider_id]
-// TODO- 3. Implement algorithm 
-//
 //  Created by Christopher Ketant on 11/28/13.
 //
 //
@@ -15,6 +11,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "LocationUpdates.h"
+
+#define LOCATION_UPDATE_PATH @"/location_update/"
 
 //handle circular dependency
 @class CDVInterface;

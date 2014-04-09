@@ -20,6 +20,7 @@
 
 
 
+
 /**
  * Convert the Location into a Dictonary
  * in order to be sent via JSON
@@ -199,8 +200,9 @@
     //in dictionaries all within an array
     NSArray *locations = [self getLocations:dbLocations];
     NSNumber *battery = [[NSNumber alloc]initWithFloat:[[UIDevice currentDevice] batteryLevel]];
-    NSString *rId = ([riderId length] == 0 ) ? @"TcH4FR09ROSA4b42WJX6i+SFbTpuzcr06gszd9lHA4c=" : riderId;//this is temporary until its integrated with sencha
-    NSString *vTourConfigId = ([tourConfigId length] == 0) ? @"sussex" : tourConfigId;
+    NSString *rId = riderId;
+    NSString *vTourConfigId = tourConfigId;
+    NSString *url = [NSString stringWithFormat: @"%@%@",self.DCSUrl,LOCATION_UPDATE_PATH];
     
     NSMutableDictionary *json = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                  rId, @"rider_id", //rider's id //hard coded for now
@@ -222,10 +224,9 @@
         
     }
     
-    
     //build up request url
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:
-                                    [NSURL URLWithString: ([DCSUrl length] == 0) ? @"http://cycl-ops.se.rit.edu/location_update/" : DCSUrl] ];//must update
+                                    [NSURL URLWithString: url] ];//must update
     //add Method
     [request setHTTPMethod:@"POST"];
     

@@ -32,7 +32,7 @@
 
 @implementation AppDelegate
 
-@synthesize window, viewController;
+@synthesize window, viewController, cdv;
 
 - (id)init
 {
@@ -87,6 +87,8 @@
 
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+    
+    NSLog(@"Start Up");
 
     return YES;
 }
@@ -128,6 +130,18 @@
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
+}
+
+- (void)addCDVInterface:(CDVInterface*)vCordova{
+    cdv = vCordova;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application{
+    NSLog(@"Did Enter BG");
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application{
+    NSLog(@"Did Enter FG");
 }
 
 @end

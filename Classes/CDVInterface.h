@@ -15,6 +15,7 @@
 #import "LocationDBOpenHelper.h"
 #import "BGLocationTracking.h"
 #import "ServiceConnector.h"
+#import "AppDelegate.h"
 
 //handle circular dependency
 @class ServiceConnector;
@@ -37,6 +38,23 @@
  */
 @property double serverPollRange;
 
+/*
+ * Server poll rate + range
+ */
+@property double finalServerPollRate;
+
+/*
+ * States of the Race and Beta Race
+ */
+@property (nonatomic) BOOL isRaceStart, isRaceEnd, isBetaRaceStart, isBetaRaceEnd;
+
+/*
+ * DateTime Race starts/started, ends/ended
+ */
+@property (nonatomic) NSDate *startDateTime, *endDateTime, *betaStartDateTime, *betaEndDateTime;
+
+
+
 #pragma-
 #pragma mark - Initialize Functions
 
@@ -45,10 +63,12 @@
  * The CDVInokedUrlCommand will contain a
  * json and command will have a size of
  * one. The json will have the following:
- *      dcsUrl
+ *      dcsUrl,
+ *      startBetaTime
  *      startTime
+ *      endBetaTime
  *      endTime
- *      tourConfigId
+ *      tourId
  *      riderId
  *
  *
@@ -114,6 +134,22 @@
  *
  **/
 - (void) clearLocations;
+
+-(NSDate *)getCurrRaceStart;
+
+- (BOOL)isRaceStarted:(NSDate *)locStartDate;
+
+- (BOOL)isRaceEnded:(NSDate *)locEndDate;
+
+/**
+ * The task to be run
+ * when we hit the polling rate
+ * time. Send the Location data we
+ * we have currently stored.
+ **/
+-(void)pushLocationUpdates;
+
+
 #pragma -
 #pragma mark - Update State 
 /**
