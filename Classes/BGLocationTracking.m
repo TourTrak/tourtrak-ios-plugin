@@ -105,6 +105,9 @@
             //Is diff in prev time and curr loc time greater than Geo-Sampling Rate
             double diff1 = [currDateTime timeIntervalSinceDate:prevDateTime];
             
+            NSLog(@"Difference in time between Current Time and the Previous Location Time: %f", diff1);
+            NSLog(@"Location Poll Rate: %f", cordInterface.locPollRate);
+            
             //If the difference is greater than loc poll rate
             if(diff1 >= cordInterface.locPollRate){
                 
@@ -117,6 +120,9 @@
             //Is diff in prev time and curr loc time greater than server poll rate
             double diff2 = [currDateTime timeIntervalSinceDate:prevDateTime];
             
+            NSLog(@"Difference in time between Current Time and the Previous Location Time: %f", diff1);
+            NSLog(@"Final Server Poll Rate: %f", cordInterface.finalServerPollRate);
+            
             //if the diff greater than server poll rate
             if (diff2 >= cordInterface.finalServerPollRate) {
                 
@@ -124,11 +130,12 @@
                 
                 //push to server
                 [cordInterface pushLocationUpdates];
+                
+                //update Previous time
+                prevDateTime = currDateTime;
             }
             
         }
-        //update Previous time
-        prevDateTime = currDateTime;
         
         
     }
