@@ -19,7 +19,7 @@
 @property (strong, nonatomic) NSDate *locationManagerCreationDate;
 @property (nonatomic)  BOOL isTracking;
 @property UIBackgroundTaskIdentifier bgTask;
-@property NSDate *prevDateTime;
+@property NSDate *prevServDateTime, *prevLocPollDateTime;
 
 
 @end
@@ -31,7 +31,7 @@
 @synthesize successCB, errorCB;
 @synthesize locationManagerCreationDate;
 @synthesize isTracking, bgTask;
-@synthesize prevDateTime;
+@synthesize prevServDateTime, prevLocPollDateTime;
 
 
 - (id) initWithCDVInterface:(CDVInterface*)cordova{
@@ -41,7 +41,7 @@
         
         //set-up Cordova Interface
         self.cordInterface = cordova;
-        prevDateTime = [cordInterface getCurrRaceStart];
+        prevServDateTime = prevLocPollDateTime = [cordInterface getCurrRaceStart];
         
         //set-up location manager
         self.locationManager = [[CLLocationManager alloc] init];
@@ -100,10 +100,10 @@
         NSLog(@"%@ has Started", [cordInterface getTypeofRace]);
         
         //Check for null of initial Start/Date
-        if(prevDateTime != NULL){
+        if(prevServDateTime != NULL){
             
             //Is diff in prev time and curr loc time greater than Geo-Sampling Rate
-            double diff1 = [currDateTime timeIntervalSinceDate:prevDateTime];
+            double diff1 = [currDateTime timeIntervalSinceDate:prevLocPollDateTime];
             
             NSLog(@"Difference in time between Current Time and the Previous Location Time: %f", diff1);
             NSLog(@"Location Poll Rate: %f", cordInterface.locPollRate);
@@ -115,10 +115,13 @@
                 
                 //Add to DB
                 [cordInterface insertCurrLocation:currLocation];
+                
+                //Update the Previous Location Poll Rate Date/Time
+                prevLocPollDateTime = currDateTime;
             }
             
             //Is diff in prev time and curr loc time greater than server poll rate
-            double diff2 = [currDateTime timeIntervalSinceDate:prevDateTime];
+            double diff2 = [currDateTime timeIntervalSinceDate:prevServDateTime];
             
             NSLog(@"Difference in time between Current Time and the Previous Location Time: %f", diff1);
             NSLog(@"Final Server Poll Rate: %f", cordInterface.finalServerPollRate);
@@ -132,7 +135,7 @@
                 [cordInterface pushLocationUpdates];
                 
                 //update Previous time
-                prevDateTime = currDateTime;
+                prevServDateTime = currDateTime;
             }
             
         }
