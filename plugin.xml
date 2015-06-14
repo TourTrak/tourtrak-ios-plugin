@@ -8,8 +8,8 @@
     <license>TBD</license>
     <keywords>Cordova,Geolocation Tracker</keywords>
     
-    <dependency id="org.apache.cordova.console" url="https://git-wip-us.apache.org/repos/asf/cordova-plugin-console.git" commit="master" subdir="."/>
-    <dependency id="org.apache.cordova.network-information" url="https://github.com/apache/cordova-plugin-network-information.git" commit="master" subdir="."/>
+    <dependency id="cordova-plugin-console" url="https://git-wip-us.apache.org/repos/asf/cordova-plugin-console.git" commit="master" subdir="."/>
+    <dependency id="cordova-plugin-network-information" url="https://github.com/apache/cordova-plugin-network-information.git" commit="master" subdir="."/>
     
     <js-module src="www/js/plugins/CDVInterface.js" name="CDVInterface">
         <clobbers target="window.CDVInterface" />
