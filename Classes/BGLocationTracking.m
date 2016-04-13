@@ -58,7 +58,9 @@
 }
 
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    CLLocation* newLocation = [locations lastObject]; // grab the latest reading
+
     // don't assume normal network access if this is being executed in the background.
     // Tell OS that we are doing a background task that needs to run to completion.
     UIApplication* app = [UIApplication sharedApplication];
